@@ -1,3 +1,4 @@
+/* eslint-disable @moneteam/nestjs/api-method-should-specify-api-response */
 import {
   Controller,
   Get,
@@ -6,13 +7,12 @@ import {
   Query,
   ValidationPipe,
 } from '@nestjs/common';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOkResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { PageDto } from '../../common/dto/page.dto';
 import { RoleType } from '../../constants';
 import { ApiPageOkResponse, Auth, AuthUser, UUIDParam } from '../../decorators';
 import { UseLanguageInterceptor } from '../../interceptors/language-interceptor.service';
-import { TranslationService } from '../../shared/services/translation.service';
 import { UserDto } from './dtos/user.dto';
 import { UsersPageOptionsDto } from './dtos/users-page-options.dto';
 import { UserEntity } from './user.entity';
@@ -21,22 +21,16 @@ import { UserService } from './user.service';
 @Controller('users')
 @ApiTags('users')
 export class UserController {
-  constructor(
-    private userService: UserService,
-    private readonly translationService: TranslationService,
-  ) {}
+  constructor(private userService: UserService) {}
 
   @Get('admin')
   @Auth([RoleType.USER])
   @HttpCode(HttpStatus.OK)
   @UseLanguageInterceptor()
-  async admin(@AuthUser() user: UserEntity) {
-    const translation = await this.translationService.translate(
-      'admin.keywords.admin',
-    );
-
+  @ApiOkResponse()
+  admin(@AuthUser() user: UserEntity) {
     return {
-      text: `${translation} ${user.firstName}`,
+      text: `admin ${user.firstName}`,
     };
   }
 
@@ -48,6 +42,7 @@ export class UserController {
     type: PageDto,
   })
   getUsers(
+    // eslint-disable-next-line @moneteam/nestjs/should-specify-forbid-unknown-values
     @Query(new ValidationPipe({ transform: true }))
     pageOptionsDto: UsersPageOptionsDto,
   ): Promise<PageDto<UserDto>> {

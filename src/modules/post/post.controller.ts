@@ -1,3 +1,4 @@
+/* eslint-disable @moneteam/nestjs/api-method-should-specify-api-response */
 import {
   Body,
   Controller,

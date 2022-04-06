@@ -16,7 +16,7 @@
     "outDir": "./dist",
     "baseUrl": "./src",
     "incremental": true,
-    "strictNullChecks": true
+    "strictNullChecks": true,
   },
   "include": [
     "src/**/*"
