@@ -15,73 +15,76 @@ import { PostRepository } from './post.repository';
 
 @Injectable()
 export class PostService {
-  constructor(
-    private postRepository: PostRepository,
-    private validatorService: ValidatorService,
-    private commandBus: CommandBus,
-  ) {}
+    constructor(
+        private postRepository: PostRepository,
+        private validatorService: ValidatorService,
+        private commandBus: CommandBus,
+    ) {}
 
-  @Transactional()
-  createPost(userId: Uuid, createPostDto: CreatePostDto): Promise<PostEntity> {
-    return this.commandBus.execute<CreatePostCommand, PostEntity>(
-      new CreatePostCommand(userId, createPostDto),
-    );
-  }
-
-  async getAllPost(
-    postPageOptionsDto: PostPageOptionsDto,
-  ): Promise<PageDto<PostDto>> {
-    const queryBuilder = this.postRepository
-      .createQueryBuilder('post')
-      .leftJoinAndSelect('post.translations', 'postTranslation');
-    const [items, pageMetaDto] = await queryBuilder.paginate(
-      postPageOptionsDto,
-    );
-
-    return items.toPageDto(pageMetaDto);
-  }
-
-  async getSinglePost(id: Uuid): Promise<PostEntity> {
-    const queryBuilder = this.postRepository
-      .createQueryBuilder('post')
-      .where('post.id = :id', { id });
-
-    const postEntity = await queryBuilder.getOne();
-
-    if (!postEntity) {
-      throw new PostNotFoundException();
+    @Transactional()
+    createPost(
+        userId: Uuid,
+        createPostDto: CreatePostDto,
+    ): Promise<PostEntity> {
+        return this.commandBus.execute<CreatePostCommand, PostEntity>(
+            new CreatePostCommand(userId, createPostDto),
+        );
     }
 
-    return postEntity;
-  }
+    async getAllPost(
+        postPageOptionsDto: PostPageOptionsDto,
+    ): Promise<PageDto<PostDto>> {
+        const queryBuilder = this.postRepository
+            .createQueryBuilder('post')
+            .leftJoinAndSelect('post.translations', 'postTranslation');
+        const [items, pageMetaDto] = await queryBuilder.paginate(
+            postPageOptionsDto,
+        );
 
-  async updatePost(id: Uuid, updatePostDto: UpdatePostDto): Promise<void> {
-    const queryBuilder = this.postRepository
-      .createQueryBuilder('post')
-      .where('post.id = :id', { id });
-
-    const postEntity = await queryBuilder.getOne();
-
-    if (!postEntity) {
-      throw new PostNotFoundException();
+        return items.toPageDto(pageMetaDto);
     }
 
-    this.postRepository.merge(postEntity, updatePostDto);
+    async getSinglePost(id: Uuid): Promise<PostEntity> {
+        const queryBuilder = this.postRepository
+            .createQueryBuilder('post')
+            .where('post.id = :id', { id });
 
-    await this.postRepository.save(updatePostDto);
-  }
+        const postEntity = await queryBuilder.getOne();
 
-  async deletePost(id: Uuid): Promise<void> {
-    const queryBuilder = this.postRepository
-      .createQueryBuilder('post')
-      .where('post.id = :id', { id });
+        if (!postEntity) {
+            throw new PostNotFoundException();
+        }
 
-    const postEntity = await queryBuilder.getOne();
-
-    if (!postEntity) {
-      throw new PostNotFoundException();
+        return postEntity;
     }
 
-    await this.postRepository.remove(postEntity);
-  }
+    async updatePost(id: Uuid, updatePostDto: UpdatePostDto): Promise<void> {
+        const queryBuilder = this.postRepository
+            .createQueryBuilder('post')
+            .where('post.id = :id', { id });
+
+        const postEntity = await queryBuilder.getOne();
+
+        if (!postEntity) {
+            throw new PostNotFoundException();
+        }
+
+        this.postRepository.merge(postEntity, updatePostDto);
+
+        await this.postRepository.save(updatePostDto);
+    }
+
+    async deletePost(id: Uuid): Promise<void> {
+        const queryBuilder = this.postRepository
+            .createQueryBuilder('post')
+            .where('post.id = :id', { id });
+
+        const postEntity = await queryBuilder.getOne();
+
+        if (!postEntity) {
+            throw new PostNotFoundException();
+        }
+
+        await this.postRepository.remove(postEntity);
+    }
 }

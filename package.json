@@ -81,7 +81,6 @@
   },
   "devDependencies": {
     "@handfish/hygen": "^6.1.3",
-    "@moneteam/eslint-plugin-nestjs": "^1.2.0",
     "@nestjs/cli": "^8.2.0",
     "@nestjs/testing": "^8.2.6",
     "@types/bcrypt": "^5.0.0",

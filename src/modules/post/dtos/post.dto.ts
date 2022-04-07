@@ -6,23 +6,23 @@ import type { PostEntity } from '../post.entity';
 import { PostTranslationDto } from './post-translation.dto';
 
 export class PostDto extends AbstractDto {
-  @ApiPropertyOptional()
-  @DynamicTranslate()
-  title?: string;
+    @ApiPropertyOptional()
+    @DynamicTranslate()
+    title?: string;
 
-  @ApiPropertyOptional()
-  description?: string;
+    @ApiPropertyOptional()
+    description?: string;
 
-  @ApiPropertyOptional()
-  @StaticTranslate()
-  info: string;
+    @ApiPropertyOptional()
+    @StaticTranslate()
+    info: string;
 
-  @ApiPropertyOptional({ type: PostTranslationDto, isArray: true })
-  translations?: PostTranslationDto[];
+    @ApiPropertyOptional({ type: PostTranslationDto, isArray: true })
+    translations?: PostTranslationDto[];
 
-  constructor(postEntity: PostEntity) {
-    super(postEntity);
+    constructor(postEntity: PostEntity) {
+        super(postEntity);
 
-    this.info = 'keywords.admin';
-  }
+        this.info = 'keywords.admin';
+    }
 }

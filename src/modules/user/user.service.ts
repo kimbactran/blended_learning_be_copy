@@ -21,99 +21,104 @@ import type { UserSettingsEntity } from './user-settings.entity';
 
 @Injectable()
 export class UserService {
-  constructor(
-    private userRepository: UserRepository,
-    private validatorService: ValidatorService,
-    private awsS3Service: AwsS3Service,
-    private commandBus: CommandBus,
-  ) {}
+    constructor(
+        private userRepository: UserRepository,
+        private validatorService: ValidatorService,
+        private awsS3Service: AwsS3Service,
+        private commandBus: CommandBus,
+    ) {}
 
-  /**
-   * Find single user
-   */
-  findOne(findData: FindConditions<UserEntity>): Promise<Optional<UserEntity>> {
-    return this.userRepository.findOne(findData);
-  }
-
-  async findByUsernameOrEmail(
-    options: Partial<{ username: string; email: string }>,
-  ): Promise<Optional<UserEntity>> {
-    const queryBuilder = this.userRepository
-      .createQueryBuilder('user')
-      .leftJoinAndSelect<UserEntity, 'user'>('user.settings', 'settings');
-
-    if (options.email) {
-      queryBuilder.orWhere('user.email = :email', {
-        email: options.email,
-      });
+    /**
+     * Find single user
+     */
+    findOne(
+        findData: FindConditions<UserEntity>,
+    ): Promise<Optional<UserEntity>> {
+        return this.userRepository.findOne(findData);
     }
 
-    if (options.username) {
-      queryBuilder.orWhere('user.username = :username', {
-        username: options.username,
-      });
+    async findByUsernameOrEmail(
+        options: Partial<{ username: string; email: string }>,
+    ): Promise<Optional<UserEntity>> {
+        const queryBuilder = this.userRepository
+            .createQueryBuilder('user')
+            .leftJoinAndSelect<UserEntity, 'user'>('user.settings', 'settings');
+
+        if (options.email) {
+            queryBuilder.orWhere('user.email = :email', {
+                email: options.email,
+            });
+        }
+
+        if (options.username) {
+            queryBuilder.orWhere('user.username = :username', {
+                username: options.username,
+            });
+        }
+
+        return queryBuilder.getOne();
     }
 
-    return queryBuilder.getOne();
-  }
+    @Transactional()
+    async createUser(
+        userRegisterDto: UserRegisterDto,
+        file: IFile,
+    ): Promise<UserEntity> {
+        const user = this.userRepository.create(userRegisterDto);
 
-  @Transactional()
-  async createUser(
-    userRegisterDto: UserRegisterDto,
-    file: IFile,
-  ): Promise<UserEntity> {
-    const user = this.userRepository.create(userRegisterDto);
+        if (file && !this.validatorService.isImage(file.mimetype)) {
+            throw new FileNotImageException();
+        }
 
-    if (file && !this.validatorService.isImage(file.mimetype)) {
-      throw new FileNotImageException();
+        if (file) {
+            user.avatar = await this.awsS3Service.uploadImage(file);
+        }
+
+        await this.userRepository.save(user);
+
+        user.settings = await this.createSettings(
+            user.id,
+            plainToClass(CreateSettingsDto, {
+                isEmailVerified: false,
+                isPhoneVerified: false,
+            }),
+        );
+
+        return user;
     }
 
-    if (file) {
-      user.avatar = await this.awsS3Service.uploadImage(file);
+    async getUsers(
+        pageOptionsDto: UsersPageOptionsDto,
+    ): Promise<PageDto<UserDto>> {
+        const queryBuilder = this.userRepository.createQueryBuilder('user');
+        const [items, pageMetaDto] = await queryBuilder.paginate(
+            pageOptionsDto,
+        );
+
+        return items.toPageDto(pageMetaDto);
     }
 
-    await this.userRepository.save(user);
+    async getUser(userId: Uuid): Promise<UserDto> {
+        const queryBuilder = this.userRepository.createQueryBuilder('user');
 
-    user.settings = await this.createSettings(
-      user.id,
-      plainToClass(CreateSettingsDto, {
-        isEmailVerified: false,
-        isPhoneVerified: false,
-      }),
-    );
+        queryBuilder.where('user.id = :userId', { userId });
 
-    return user;
-  }
+        const userEntity = await queryBuilder.getOne();
 
-  async getUsers(
-    pageOptionsDto: UsersPageOptionsDto,
-  ): Promise<PageDto<UserDto>> {
-    const queryBuilder = this.userRepository.createQueryBuilder('user');
-    const [items, pageMetaDto] = await queryBuilder.paginate(pageOptionsDto);
+        if (!userEntity) {
+            throw new UserNotFoundException();
+        }
 
-    return items.toPageDto(pageMetaDto);
-  }
-
-  async getUser(userId: Uuid): Promise<UserDto> {
-    const queryBuilder = this.userRepository.createQueryBuilder('user');
-
-    queryBuilder.where('user.id = :userId', { userId });
-
-    const userEntity = await queryBuilder.getOne();
-
-    if (!userEntity) {
-      throw new UserNotFoundException();
+        return userEntity.toDto();
     }
 
-    return userEntity.toDto();
-  }
-
-  async createSettings(
-    userId: Uuid,
-    createSettingsDto: CreateSettingsDto,
-  ): Promise<UserSettingsEntity> {
-    return this.commandBus.execute<CreateSettingsCommand, UserSettingsEntity>(
-      new CreateSettingsCommand(userId, createSettingsDto),
-    );
-  }
+    async createSettings(
+        userId: Uuid,
+        createSettingsDto: CreateSettingsDto,
+    ): Promise<UserSettingsEntity> {
+        return this.commandBus.execute<
+            CreateSettingsCommand,
+            UserSettingsEntity
+        >(new CreateSettingsCommand(userId, createSettingsDto));
+    }
 }

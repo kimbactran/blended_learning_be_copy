@@ -1,11 +1,10 @@
-/* eslint-disable @moneteam/nestjs/api-method-should-specify-api-response */
 import {
-  Controller,
-  Get,
-  HttpCode,
-  HttpStatus,
-  Query,
-  ValidationPipe,
+    Controller,
+    Get,
+    HttpCode,
+    HttpStatus,
+    Query,
+    ValidationPipe,
 } from '@nestjs/common';
 import { ApiOkResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
 
@@ -21,43 +20,42 @@ import { UserService } from './user.service';
 @Controller('users')
 @ApiTags('users')
 export class UserController {
-  constructor(private userService: UserService) {}
+    constructor(private userService: UserService) {}
 
-  @Get('admin')
-  @Auth([RoleType.USER])
-  @HttpCode(HttpStatus.OK)
-  @UseLanguageInterceptor()
-  @ApiOkResponse()
-  admin(@AuthUser() user: UserEntity) {
-    return {
-      text: `admin ${user.firstName}`,
-    };
-  }
+    @Get('admin')
+    @Auth([RoleType.USER])
+    @HttpCode(HttpStatus.OK)
+    @UseLanguageInterceptor()
+    @ApiOkResponse()
+    admin(@AuthUser() user: UserEntity) {
+        return {
+            text: `admin ${user.firstName}`,
+        };
+    }
 
-  @Get()
-  @Auth([RoleType.USER])
-  @HttpCode(HttpStatus.OK)
-  @ApiPageOkResponse({
-    description: 'Get users list',
-    type: PageDto,
-  })
-  getUsers(
-    // eslint-disable-next-line @moneteam/nestjs/should-specify-forbid-unknown-values
-    @Query(new ValidationPipe({ transform: true }))
-    pageOptionsDto: UsersPageOptionsDto,
-  ): Promise<PageDto<UserDto>> {
-    return this.userService.getUsers(pageOptionsDto);
-  }
+    @Get()
+    @Auth([RoleType.USER])
+    @HttpCode(HttpStatus.OK)
+    @ApiPageOkResponse({
+        description: 'Get users list',
+        type: PageDto,
+    })
+    getUsers(
+        @Query(new ValidationPipe({ transform: true }))
+        pageOptionsDto: UsersPageOptionsDto,
+    ): Promise<PageDto<UserDto>> {
+        return this.userService.getUsers(pageOptionsDto);
+    }
 
-  @Get(':id')
-  @Auth([RoleType.USER])
-  @HttpCode(HttpStatus.OK)
-  @ApiResponse({
-    status: HttpStatus.OK,
-    description: 'Get users list',
-    type: UserDto,
-  })
-  getUser(@UUIDParam('id') userId: Uuid): Promise<UserDto> {
-    return this.userService.getUser(userId);
-  }
+    @Get(':id')
+    @Auth([RoleType.USER])
+    @HttpCode(HttpStatus.OK)
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description: 'Get users list',
+        type: UserDto,
+    })
+    getUser(@UUIDParam('id') userId: Uuid): Promise<UserDto> {
+        return this.userService.getUser(userId);
+    }
 }

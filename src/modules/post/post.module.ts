@@ -11,10 +11,10 @@ import { GetPostHandler } from './queries/get-post.query';
 export const handlers = [CreatePostHandler, GetPostHandler];
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([PostRepository, PostTranslationRepository]),
-  ],
-  providers: [PostService, ...handlers],
-  controllers: [PostController],
+    imports: [
+        TypeOrmModule.forFeature([PostRepository, PostTranslationRepository]),
+    ],
+    providers: [PostService, ...handlers],
+    controllers: [PostController],
 })
 export class PostModule {}

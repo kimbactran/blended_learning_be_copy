@@ -9,19 +9,19 @@ import { PostTranslationEntity } from './post-translation.entity';
 @Entity({ name: 'posts' })
 @UseDto(PostDto)
 export class PostEntity extends AbstractEntity<PostDto> {
-  @Column({ type: 'uuid' })
-  userId: Uuid;
+    @Column({ type: 'uuid' })
+    userId: Uuid;
 
-  @ManyToOne(() => UserEntity, (userEntity) => userEntity.posts, {
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE',
-  })
-  @JoinColumn({ name: 'user_id' })
-  user: UserEntity;
+    @ManyToOne(() => UserEntity, (userEntity) => userEntity.posts, {
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+    })
+    @JoinColumn({ name: 'user_id' })
+    user: UserEntity;
 
-  @OneToMany(
-    () => PostTranslationEntity,
-    (postTranslationEntity) => postTranslationEntity.post,
-  )
-  translations: PostTranslationEntity[];
+    @OneToMany(
+        () => PostTranslationEntity,
+        (postTranslationEntity) => postTranslationEntity.post,
+    )
+    translations: PostTranslationEntity[];
 }
