@@ -27,8 +27,6 @@ import { setupSwagger } from './setup-swagger';
 import { ApiConfigService } from './shared/services/api-config.service';
 import { SharedModule } from './shared/shared.module';
 
-declare const module: any;
-
 export async function bootstrap(): Promise<NestExpressApplication> {
     initializeTransactionalContext();
     patchTypeORMRepositoryWithBaseRepository();
@@ -50,6 +48,7 @@ export async function bootstrap(): Promise<NestExpressApplication> {
     app.use(
         morgan(':method :url :status :res[content-length] - :response-time ms'),
     );
+
     app.enableVersioning();
 
     const reflector = app.get(Reflector);
@@ -102,11 +101,6 @@ export async function bootstrap(): Promise<NestExpressApplication> {
 
     const port = configService.appConfig.port;
     await app.listen(port);
-
-    if (module.hot) {
-        module.hot.accept();
-        module.hot.dispose(() => app.close());
-    }
 
     console.info(`server running on ${await app.getUrl()}`);
 

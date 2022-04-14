@@ -75,6 +75,7 @@ export class AuthController {
     @Auth([RoleType.USER, RoleType.ADMIN])
     @ApiOkResponse({ type: UserDto, description: 'current user info' })
     getCurrentUser(@AuthUser() user: UserEntity): UserDto {
+        // console.log(user)
         return user.toDto();
     }
 }

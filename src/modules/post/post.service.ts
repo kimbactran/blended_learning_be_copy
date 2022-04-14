@@ -34,9 +34,7 @@ export class PostService {
     async getAllPost(
         postPageOptionsDto: PostPageOptionsDto,
     ): Promise<PageDto<PostDto>> {
-        const queryBuilder = this.postRepository
-            .createQueryBuilder('post')
-            .leftJoinAndSelect('post.translations', 'postTranslation');
+        const queryBuilder = this.postRepository.createQueryBuilder('post');
         const [items, pageMetaDto] = await queryBuilder.paginate(
             postPageOptionsDto,
         );

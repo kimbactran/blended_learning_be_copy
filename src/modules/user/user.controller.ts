@@ -23,7 +23,7 @@ export class UserController {
     constructor(private userService: UserService) {}
 
     @Get('admin')
-    @Auth([RoleType.USER])
+    @Auth([RoleType.ADMIN])
     @HttpCode(HttpStatus.OK)
     @UseLanguageInterceptor()
     @ApiOkResponse()

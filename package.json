@@ -9,7 +9,7 @@
     "build:prod": "tsc -p tsconfig.build.json",
     "postbuild:prod": "copyfiles --up 1 src/**/*.json dist",
     "start:hmr": "node dist/main.hmr.ts",
-    "start:dev": "nest build --webpack --webpackPath webpack-hmr.config.js --watch",
+    "start:dev": "ts-node src/main.ts",
     "start:prod": "node dist/main.js",
     "typeorm": "ts-node node_modules/typeorm/cli.js -f ormconfig",
     "migration:generate": "yarn run typeorm migration:generate -d src/database/migrations -n",
@@ -30,11 +30,7 @@
     "test:debug": "NODE_ENV=test node --inspect-brk -r ts-node/register node_modules/.bin/jest --runInBand",
     "copy:lib": "cpx 'src/lib/**/{files,workspace}/**/*.*' dist/lib && cpx 'src/lib/**/{files,workspace}/**/.!(gitignore)' dist/lib",
     "test:e2e": "NODE_ENV=test jest --config ./test/jest-e2e.json",
-    "docs:dev": "vuepress dev -p 7070",
-    "docs:build": "DEPLOY_ENV=gh-pages vuepress build",
-    "docs:deploy": "yarn docs:build && gh-pages -d .vuepress/dist",
     "prepare": "husky install",
-    "prerelease": "yarn docs:deploy",
     "release": "release-it"
   },
   "dependencies": {

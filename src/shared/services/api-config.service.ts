@@ -104,6 +104,7 @@ export class ApiConfigService {
             database: this.getString('DB_DATABASE'),
             subscribers: [UserSubscriber],
             migrationsRun: true,
+            logging: true,
             namingStrategy: new SnakeNamingStrategy(),
         };
     }
