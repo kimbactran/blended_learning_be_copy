@@ -6,15 +6,13 @@ import {
     Query,
     ValidationPipe,
 } from '@nestjs/common';
-import { ApiOkResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { PageDto } from '../../common/dto/page.dto';
 import { RoleType } from '../../constants';
-import { ApiPageOkResponse, Auth, AuthUser, UUIDParam } from '../../decorators';
-import { UseLanguageInterceptor } from '../../interceptors/language-interceptor.service';
+import { ApiPageOkResponse, Auth, UUIDParam } from '../../decorators';
 import { UserDto } from './dtos/user.dto';
 import { UsersPageOptionsDto } from './dtos/users-page-options.dto';
-import { UserEntity } from './user.entity';
 import { UserService } from './user.service';
 
 @Controller('users')
@@ -22,16 +20,16 @@ import { UserService } from './user.service';
 export class UserController {
     constructor(private userService: UserService) {}
 
-    @Get('admin')
-    @Auth([RoleType.ADMIN])
-    @HttpCode(HttpStatus.OK)
-    @UseLanguageInterceptor()
-    @ApiOkResponse()
-    admin(@AuthUser() user: UserEntity) {
-        return {
-            text: `admin ${user.firstName}`,
-        };
-    }
+    // @Get('admin')
+    // @Auth([RoleType.ADMIN])
+    // @HttpCode(HttpStatus.OK)
+    // @UseLanguageInterceptor()
+    // @ApiOkResponse()
+    // admin(@AuthUser() user: UserEntity) {
+    //     return {
+    //         text: `admin ${user.firstName}`,
+    //     };
+    // }
 
     @Get()
     @Auth([RoleType.USER])
@@ -47,7 +45,7 @@ export class UserController {
         return this.userService.getUsers(pageOptionsDto);
     }
 
-    @Get(':id')
+    @Get(':address')
     @Auth([RoleType.USER])
     @HttpCode(HttpStatus.OK)
     @ApiResponse({
@@ -55,7 +53,7 @@ export class UserController {
         description: 'Get users list',
         type: UserDto,
     })
-    getUser(@UUIDParam('id') userId: Uuid): Promise<UserDto> {
-        return this.userService.getUser(userId);
+    getUser(@UUIDParam('address') userAddress: string): Promise<UserDto> {
+        return this.userService.getUser(userAddress);
     }
 }

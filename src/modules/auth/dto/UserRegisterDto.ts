@@ -1,42 +1,35 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-    IsEmail,
-    IsNotEmpty,
-    IsPhoneNumber,
-    IsString,
-    MinLength,
-} from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 import { Column } from 'typeorm';
-
-import { Trim } from '../../../decorators/transform.decorators';
 
 export class UserRegisterDto {
     @ApiProperty()
     @IsString()
     @IsNotEmpty()
-    @Trim()
-    readonly firstName: string;
-
-    @ApiProperty()
-    @IsString()
-    @IsNotEmpty()
-    @Trim()
-    readonly lastName: string;
-
-    @ApiProperty()
-    @IsString()
-    @IsEmail()
-    @IsNotEmpty()
-    @Trim()
-    readonly email: string;
-
-    @ApiProperty({ minLength: 6 })
-    @IsString()
-    @MinLength(6)
-    readonly password: string;
-
-    @ApiProperty({ required: false })
     @Column()
-    @IsPhoneNumber()
-    phone: string;
+    readonly address: string;
+
+    @ApiProperty()
+    @IsString()
+    @IsNotEmpty()
+    @Column()
+    readonly username: string;
+
+    @ApiProperty()
+    @IsString()
+    @IsNotEmpty()
+    @Column()
+    readonly logo: string;
+
+    @ApiProperty()
+    @IsString()
+    @IsNotEmpty()
+    @Column()
+    readonly background_banner: string;
+
+    @ApiProperty()
+    @IsString()
+    @IsNotEmpty()
+    @Column()
+    readonly bio: string;
 }

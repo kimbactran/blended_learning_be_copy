@@ -1,33 +1,28 @@
-import { Column, Entity, OneToMany, OneToOne } from 'typeorm';
+import { Column, Entity, OneToOne, PrimaryColumn } from 'typeorm';
 
 import type { IAbstractEntity } from '../../common/abstract.entity';
 import { AbstractEntity } from '../../common/abstract.entity';
 import { RoleType } from '../../constants';
-import { UseDto, VirtualColumn } from '../../decorators';
-import { PostEntity } from '../post/post.entity';
+import { UseDto } from '../../decorators';
 import type { UserDtoOptions } from './dtos/user.dto';
 import { UserDto } from './dtos/user.dto';
-import type { IUserSettingsEntity } from './user-settings.entity';
-import { UserSettingsEntity } from './user-settings.entity';
+import type { IUserContactEntity } from './user-contact.entity';
+import { UserContactEntity } from './user-contact.entity';
 
 export interface IUserEntity extends IAbstractEntity<UserDto> {
-    firstName?: string;
-
-    lastName?: string;
-
     role: RoleType;
 
-    email?: string;
+    username: string;
 
-    password?: string;
+    address: string;
 
-    phone?: string;
+    logo: string;
 
-    avatar?: string;
+    background_banner: string;
 
-    fullName?: string;
+    bio: string;
 
-    settings?: IUserSettingsEntity;
+    contact: IUserContactEntity;
 }
 
 @Entity({ name: 'users' })
@@ -36,33 +31,24 @@ export class UserEntity
     extends AbstractEntity<UserDto, UserDtoOptions>
     implements IUserEntity
 {
-    @Column({ nullable: true })
-    firstName?: string;
-
-    @Column({ nullable: true })
-    lastName?: string;
-
     @Column({ type: 'enum', enum: RoleType, default: RoleType.USER })
     role: RoleType;
 
-    @Column({ unique: true, nullable: true })
-    email?: string;
+    @PrimaryColumn({ unique: true, nullable: false })
+    address: string;
+
+    @Column({ unique: true, nullable: false })
+    username: string;
 
     @Column({ nullable: true })
-    password?: string;
+    logo: string;
+
+    @Column({ nullable: false })
+    background_banner: string;
 
     @Column({ nullable: true })
-    phone?: string;
+    bio: string;
 
-    @Column({ nullable: true })
-    avatar?: string;
-
-    @VirtualColumn()
-    fullName?: string;
-
-    @OneToOne(() => UserSettingsEntity, (userSettings) => userSettings.user)
-    settings?: UserSettingsEntity;
-
-    @OneToMany(() => PostEntity, (postEntity) => postEntity.user)
-    posts: PostEntity[];
+    @OneToOne(() => UserContactEntity, (userContact) => userContact.user)
+    contact: UserContactEntity;
 }

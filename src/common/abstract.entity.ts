@@ -1,8 +1,4 @@
-import {
-    CreateDateColumn,
-    PrimaryGeneratedColumn,
-    UpdateDateColumn,
-} from 'typeorm';
+import { CreateDateColumn, UpdateDateColumn } from 'typeorm';
 
 import type { Constructor } from '../types';
 import type { AbstractDto } from './dto/abstract.dto';
@@ -16,7 +12,6 @@ import type { AbstractDto } from './dto/abstract.dto';
  * otherwise just delete and use your own entity.
  */
 export interface IAbstractEntity<DTO extends AbstractDto, O = never> {
-    id: Uuid;
     createdAt: Date;
     updatedAt: Date;
 
@@ -28,9 +23,6 @@ export abstract class AbstractEntity<
     O = never,
 > implements IAbstractEntity<DTO, O>
 {
-    @PrimaryGeneratedColumn('uuid')
-    id: Uuid;
-
     @CreateDateColumn({
         type: 'timestamp',
     })

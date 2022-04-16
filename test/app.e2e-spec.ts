@@ -43,10 +43,11 @@ describe('AuthController (e2e)', () => {
             // .field('email', 'john@smith.com')
             // .field('password', 'password')
             .send({
-                firstName: 'John',
-                lastName: 'Smith',
-                email: 'john@smith.dev',
-                password: '123@abcd',
+                address: 'asc81234jkdnjsdfy7124',
+                username: 'user1',
+                logo: 'string.logo',
+                background_banner: 'string.bg',
+                bio: 'bio acsad',
             })
             .expect(200);
 
@@ -57,8 +58,7 @@ describe('AuthController (e2e)', () => {
         const response = await request(app.getHttpServer())
             .post('/auth/login')
             .send({
-                email: 'john@smith.dev',
-                password: '123@abcd',
+                address: 'asc81234jkdnjsdfy7124',
             })
             .expect(200);
 

@@ -5,19 +5,18 @@ import type { FindConditions } from 'typeorm';
 import { Transactional } from 'typeorm-transactional-cls-hooked';
 
 import type { PageDto } from '../../common/dto/page.dto';
-import { FileNotImageException, UserNotFoundException } from '../../exceptions';
-import { IFile } from '../../interfaces';
+import { UserNotFoundException } from '../../exceptions';
 import { AwsS3Service } from '../../shared/services/aws-s3.service';
 import { ValidatorService } from '../../shared/services/validator.service';
 import type { Optional } from '../../types';
 import { UserRegisterDto } from '../auth/dto/UserRegisterDto';
-import { CreateSettingsCommand } from './commands/create-settings.command';
-import { CreateSettingsDto } from './dtos/create-settings.dto';
+import { CreateContactCommand } from './commands/create-contact.command';
+import { CreateContactDto } from './dtos/create-contact.dto';
 import type { UserDto } from './dtos/user.dto';
 import type { UsersPageOptionsDto } from './dtos/users-page-options.dto';
 import type { UserEntity } from './user.entity';
 import { UserRepository } from './user.repository';
-import type { UserSettingsEntity } from './user-settings.entity';
+import type { UserContactEntity } from './user-contact.entity';
 
 @Injectable()
 export class UserService {
@@ -37,22 +36,22 @@ export class UserService {
         return this.userRepository.findOne(findData);
     }
 
-    async findByUsernameOrEmail(
-        options: Partial<{ username: string; email: string }>,
+    async findByAddressOrUsername(
+        options: Partial<{ username: string; address: string }>,
     ): Promise<Optional<UserEntity>> {
         const queryBuilder = this.userRepository
             .createQueryBuilder('user')
-            .leftJoinAndSelect<UserEntity, 'user'>('user.settings', 'settings');
-
-        if (options.email) {
-            queryBuilder.orWhere('user.email = :email', {
-                email: options.email,
-            });
-        }
+            .leftJoinAndSelect<UserEntity, 'user'>('user.contact', 'contact');
 
         if (options.username) {
             queryBuilder.orWhere('user.username = :username', {
-                username: options.username,
+                email: options.username,
+            });
+        }
+
+        if (options.address) {
+            queryBuilder.orWhere('user.address = :address', {
+                address: options.address,
             });
         }
 
@@ -60,27 +59,18 @@ export class UserService {
     }
 
     @Transactional()
-    async createUser(
-        userRegisterDto: UserRegisterDto,
-        file: IFile,
-    ): Promise<UserEntity> {
+    async createUser(userRegisterDto: UserRegisterDto): Promise<UserEntity> {
         const user = this.userRepository.create(userRegisterDto);
-
-        if (file && !this.validatorService.isImage(file.mimetype)) {
-            throw new FileNotImageException();
-        }
-
-        if (file) {
-            user.avatar = await this.awsS3Service.uploadImage(file);
-        }
 
         await this.userRepository.save(user);
 
-        user.settings = await this.createSettings(
-            user.id,
-            plainToClass(CreateSettingsDto, {
-                isEmailVerified: false,
-                isPhoneVerified: false,
+        user.contact = await this.createContact(
+            user.address,
+            plainToClass(CreateContactDto, {
+                twitter: '',
+                facebook: '',
+                email: '',
+                behance: '',
             }),
         );
 
@@ -98,10 +88,10 @@ export class UserService {
         return items.toPageDto(pageMetaDto);
     }
 
-    async getUser(userId: Uuid): Promise<UserDto> {
+    async getUser(userAddress: string): Promise<UserDto> {
         const queryBuilder = this.userRepository.createQueryBuilder('user');
 
-        queryBuilder.where('user.id = :userId', { userId });
+        queryBuilder.where('user.address = :userAddress', { userAddress });
 
         const userEntity = await queryBuilder.getOne();
 
@@ -112,13 +102,12 @@ export class UserService {
         return userEntity.toDto();
     }
 
-    async createSettings(
-        userId: Uuid,
-        createSettingsDto: CreateSettingsDto,
-    ): Promise<UserSettingsEntity> {
-        return this.commandBus.execute<
-            CreateSettingsCommand,
-            UserSettingsEntity
-        >(new CreateSettingsCommand(userId, createSettingsDto));
+    async createContact(
+        userAddress: string,
+        createContactDto: CreateContactDto,
+    ): Promise<UserContactEntity> {
+        return this.commandBus.execute<CreateContactCommand, UserContactEntity>(
+            new CreateContactCommand(userAddress, createContactDto),
+        );
     }
 }
