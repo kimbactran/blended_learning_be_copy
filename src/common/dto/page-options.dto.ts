@@ -1,9 +1,9 @@
-import { Order } from '../../constants';
+import { Order } from '@constants/index';
 import {
     EnumFieldOptional,
     NumberFieldOptional,
     StringFieldOptional,
-} from '../../decorators';
+} from '@decorators/index';
 
 export class PageOptionsDto {
     @EnumFieldOptional(() => Order, {

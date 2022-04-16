@@ -1,4 +1,4 @@
-import { EmailFieldOptional, URLFieldOptional } from '../../../decorators';
+import { EmailFieldOptional, URLFieldOptional } from '@decorators/index';
 
 export class CreateContactDto {
     @URLFieldOptional()

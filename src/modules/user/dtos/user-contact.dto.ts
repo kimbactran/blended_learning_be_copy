@@ -1,6 +1,6 @@
+import { AbstractDto } from '@common/dto/abstract.dto';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
-import { AbstractDto } from '../../../common/dto/abstract.dto';
 import type { UserContactEntity } from '../user-contact.entity';
 
 export type UserContactDtoOptions = Partial<{

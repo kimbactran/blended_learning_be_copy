@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { AwsS3Service } from '@sharedServices/aws-s3.service';
+import { ValidatorService } from '@sharedServices/validator.service';
 
-import { AwsS3Service } from '../../shared/services/aws-s3.service';
-import { ValidatorService } from '../../shared/services/validator.service';
 import { CreateContactHandler } from './commands/create-contact.command';
 import { UserController } from './user.controller';
 import { UserRepository } from './user.repository';

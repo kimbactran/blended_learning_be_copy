@@ -20,7 +20,7 @@ skip_if: <%= !blocks.includes('TranslationEntity') %>
 %>import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 
 import { AbstractTranslationEntity } from '../../common/abstract.entity';
-import { UseDto } from '../../decorators';
+import { UseDto } from '@/decorators';
 import { <%= TranslationDtoName %> } from './dtos/<%= translationDtoFileName %>';
 import { <%= EntityName %> } from './<%= entityFileName %>';
 

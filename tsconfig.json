@@ -17,6 +17,16 @@
     "baseUrl": "./src",
     "incremental": true,
     "strictNullChecks": true,
+    "paths":{
+        "@common/*":["common/*"],
+        "@constants/*":["constants/*"],
+        "@decorators/*":["decorators/*"],
+        "@exceptions/*":["exceptions/*"],    
+        "@modules/*":["modules/*"],
+        "@sharedServices/*":["shared/services/*"],
+        "@user/*":["modules/user/*"],
+        "@validators/*":["validators/*"]
+    }
   },
   "include": [
     "src/**/*"

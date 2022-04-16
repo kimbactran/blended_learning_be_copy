@@ -1,3 +1,4 @@
+import { LanguageCode } from '@constants/index';
 import type {
     CallHandler,
     ExecutionContext,
@@ -6,7 +7,6 @@ import type {
 import { Injectable, UseInterceptors } from '@nestjs/common';
 import type { Observable } from 'rxjs';
 
-import { LanguageCode } from '../constants';
 import { ContextProvider } from '../providers';
 
 @Injectable()

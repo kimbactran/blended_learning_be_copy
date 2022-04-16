@@ -43,7 +43,7 @@ skip_if: <%= !blocks.includes('Controller') %>
 import { ApiTags } from '@nestjs/swagger';
 
 import type { PageDto } from '../../common/dto/page.dto';
-import { Auth, UUIDParam } from '../../decorators';
+import { Auth, UUIDParam } from '@/decorators';
 import { <%= CreateDtoName %> } from './dtos/<%= createDtoFileName %>';
 import type { <%= DtoName %> } from './dtos/<%= dtoFileName %>';
 import { <%= PageOptionsDtoName %> } from './dtos/<%= pageOptionsDtoFileName %>';

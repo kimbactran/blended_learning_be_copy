@@ -1,3 +1,6 @@
+import { PageDto } from '@common/dto/page.dto';
+import { RoleType } from '@constants/index';
+import { ApiPageOkResponse, Auth } from '@decorators/index';
 import {
     Controller,
     Get,
@@ -9,9 +12,6 @@ import {
 } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 
-import { PageDto } from '../../common/dto/page.dto';
-import { RoleType } from '../../constants';
-import { ApiPageOkResponse, Auth } from '../../decorators';
 import { UserDto } from './dtos/user.dto';
 import { UsersPageOptionsDto } from './dtos/users-page-options.dto';
 import { UserService } from './user.service';

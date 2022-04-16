@@ -1,7 +1,7 @@
+import { AbstractDto } from '@common/dto/abstract.dto';
+import { RoleType } from '@constants/index';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
-import { AbstractDto } from '../../../common/dto/abstract.dto';
-import { RoleType } from '../../../constants';
 import type { UserEntity } from '../user.entity';
 import { UserContactDto } from './user-contact.dto';
 

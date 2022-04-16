@@ -1,9 +1,9 @@
+import type { IAbstractEntity } from '@common/abstract.entity';
+import { AbstractEntity } from '@common/abstract.entity';
+import { RoleType } from '@constants/index';
+import { UseDto } from '@decorators/index';
 import { Column, Entity, OneToOne, PrimaryColumn } from 'typeorm';
 
-import type { IAbstractEntity } from '../../common/abstract.entity';
-import { AbstractEntity } from '../../common/abstract.entity';
-import { RoleType } from '../../constants';
-import { UseDto } from '../../decorators';
 import type { UserDtoOptions } from './dtos/user.dto';
 import { UserDto } from './dtos/user.dto';
 import { UserContactEntity } from './user-contact.entity';

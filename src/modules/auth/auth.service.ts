@@ -1,14 +1,14 @@
+// import { validateHash } from '@common/utils';
+import type { RoleType } from '@constants/index';
+import { TokenType } from '@constants/index';
+import { UserNotFoundException } from '@exceptions/index';
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+// import { UserNotFoundException } from '@exceptions/index';
+import { ApiConfigService } from '@sharedServices/api-config.service';
+import type { UserEntity } from '@user/user.entity';
+import { UserService } from '@user/user.service';
 
-// import { validateHash } from '../../common/utils';
-import type { RoleType } from '../../constants';
-import { TokenType } from '../../constants';
-import { UserNotFoundException } from '../../exceptions';
-// import { UserNotFoundException } from '../../exceptions';
-import { ApiConfigService } from '../../shared/services/api-config.service';
-import type { UserEntity } from '../user/user.entity';
-import { UserService } from '../user/user.service';
 import { TokenPayloadDto } from './dto/TokenPayloadDto';
 import type { UserLoginDto } from './dto/UserLoginDto';
 

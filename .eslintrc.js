@@ -34,7 +34,7 @@ module.exports = {
      */
     'import/export': 'error',
     'import/first': 'error',
-    'import/no-unresolved': 'error',
+    // 'import/no-unresolved': 'error',
     'import/named': 'error',
     'import/namespace': 'error',
     'import/no-duplicates': 'error',
@@ -47,7 +47,7 @@ module.exports = {
     'import/no-cycle': 'off',
     'import/no-unused-modules': 'error',
     'import/no-namespace': 'error',
-    'import/extensions': ['error', 'never'],
+    // 'import/extensions': ['error', 'never'],
     'import/no-useless-path-segments': ['error', {
       noUselessIndex: true,
     }],

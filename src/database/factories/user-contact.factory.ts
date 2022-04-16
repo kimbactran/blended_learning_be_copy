@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { UserEntity } from '@modules/user/user.entity';
+import { UserContactEntity } from '@modules/user/user-contact.entity';
 import { define, factory } from 'typeorm-seeding';
-
-import { UserEntity } from '../../modules/user/user.entity';
-import { UserContactEntity } from '../../modules/user/user-contact.entity';
 
 define(UserContactEntity, (faker) => {
     const facebook = faker.name.findName();

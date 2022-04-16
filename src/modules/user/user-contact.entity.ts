@@ -1,3 +1,6 @@
+import type { IAbstractEntity } from '@common/abstract.entity';
+import { AbstractEntity } from '@common/abstract.entity';
+import { UseDto } from '@decorators/index';
 import {
     Column,
     Entity,
@@ -6,9 +9,6 @@ import {
     PrimaryGeneratedColumn,
 } from 'typeorm';
 
-import type { IAbstractEntity } from '../../common/abstract.entity';
-import { AbstractEntity } from '../../common/abstract.entity';
-import { UseDto } from '../../decorators';
 import type { UserContactDtoOptions } from './dtos/user-contact.dto';
 import { UserContactDto } from './dtos/user-contact.dto';
 import type { IUserEntity } from './user.entity';

@@ -4,8 +4,6 @@ import type { ApiPropertyOptions } from '@nestjs/swagger';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
-    ArrayMaxSize,
-    ArrayMinSize,
     ArrayNotEmpty,
     IsBoolean,
     IsDate,
@@ -23,11 +21,9 @@ import {
     MaxLength,
     Min,
     MinLength,
-    ValidateNested,
 } from 'class-validator';
 import _ from 'lodash';
 
-import { supportedLanguageCount } from '../constants';
 import { ApiEnumProperty, ApiUUIDProperty } from './property.decorators';
 import {
     PhoneNumberSerializer,
@@ -38,8 +34,6 @@ import {
     Trim,
 } from './transform.decorators';
 import { IsPassword, IsPhoneNumber, IsTmpKey } from './validator.decorators';
-
-type RequireField<T, K extends keyof T> = T & Required<Pick<T, K>>;
 
 interface IStringFieldOptions {
     minLength?: number;
@@ -189,36 +183,6 @@ export function BooleanFieldOptional(
     return applyDecorators(
         IsOptional(),
         BooleanField({ required: false, ...options }),
-    );
-}
-
-export function TranslationsField(
-    options: RequireField<Omit<ApiPropertyOptions, 'isArray'>, 'type'> &
-        Partial<{ swagger: boolean }>,
-): PropertyDecorator {
-    const decorators = [
-        ArrayMinSize(supportedLanguageCount),
-        ArrayMaxSize(supportedLanguageCount),
-        ValidateNested({
-            each: true,
-        }),
-        Type(() => options.type as FunctionConstructor),
-    ];
-
-    if (options?.swagger !== false) {
-        decorators.push(ApiProperty({ isArray: true, ...options }));
-    }
-
-    return applyDecorators(...decorators);
-}
-
-export function TranslationsFieldOptional(
-    options: RequireField<Omit<ApiPropertyOptions, 'isArray'>, 'type'> &
-        Partial<{ swagger: boolean }>,
-): PropertyDecorator {
-    return applyDecorators(
-        IsOptional(),
-        TranslationsField({ required: false, ...options }),
     );
 }
 

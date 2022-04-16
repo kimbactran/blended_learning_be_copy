@@ -17,7 +17,7 @@ skip_if: <%= !blocks.includes('Entity') %>
 %>import { Entity, OneToMany } from 'typeorm';
 
 import { AbstractEntity } from '../../common/abstract.entity';
-import { UseDto } from '../../decorators';
+import { UseDto } from '@/decorators';
 import type { <%= DtoOptionName %> } from './dtos/<%= dtoFileName %>';
 import { <%= DtoName %> } from './dtos/<%= dtoFileName %>';
 import { <%= TranslationEntityName %> } from './<%= translationEntityFileName %>';

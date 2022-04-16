@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+import { RoleType } from '@constants/index';
+import { Auth, AuthUser } from '@decorators/index';
+import { UserNotFoundException } from '@exceptions/index';
 import { ApiException } from '@nanogiants/nestjs-swagger-api-exception-decorator';
 import {
     Body,
@@ -9,13 +13,10 @@ import {
     Version,
 } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { UserDto } from '@user/dtos/user.dto';
+import { UserEntity } from '@user/user.entity';
+import { UserService } from '@user/user.service';
 
-import { RoleType } from '../../constants';
-import { Auth, AuthUser } from '../../decorators';
-import { UserNotFoundException } from '../../exceptions';
-import { UserDto } from '../user/dtos/user.dto';
-import { UserEntity } from '../user/user.entity';
-import { UserService } from '../user/user.service';
 import { AuthService } from './auth.service';
 import { LoginPayloadDto } from './dto/LoginPayloadDto';
 import { UserLoginDto } from './dto/UserLoginDto';

@@ -1,13 +1,13 @@
+import type { PageDto } from '@common/dto/page.dto';
+import { UserNotFoundException } from '@exceptions/index';
 import { Injectable } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
+import { AwsS3Service } from '@sharedServices/aws-s3.service';
+import { ValidatorService } from '@sharedServices/validator.service';
 import { plainToClass } from 'class-transformer';
 import type { FindConditions } from 'typeorm';
 import { Transactional } from 'typeorm-transactional-cls-hooked';
 
-import type { PageDto } from '../../common/dto/page.dto';
-import { UserNotFoundException } from '../../exceptions';
-import { AwsS3Service } from '../../shared/services/aws-s3.service';
-import { ValidatorService } from '../../shared/services/validator.service';
 import type { Optional } from '../../types';
 import { UserRegisterDto } from '../auth/dto/UserRegisterDto';
 import { CreateContactCommand } from './commands/create-contact.command';

@@ -1,6 +1,6 @@
+import type { LanguageCode } from '@constants/index';
 import { getValue, setValue } from 'express-ctx';
 
-import type { LanguageCode } from '../constants';
 import type { UserEntity } from '../modules/user/user.entity';
 
 export class ContextProvider {

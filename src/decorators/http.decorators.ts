@@ -1,3 +1,4 @@
+import type { RoleType } from '@constants/index';
 import type { PipeTransform } from '@nestjs/common';
 import {
     applyDecorators,
@@ -10,7 +11,6 @@ import {
 import type { Type } from '@nestjs/common/interfaces';
 import { ApiBearerAuth, ApiUnauthorizedResponse } from '@nestjs/swagger';
 
-import type { RoleType } from '../constants';
 import { AuthGuard } from '../guards/auth.guard';
 import { RolesGuard } from '../guards/roles.guard';
 import { AuthUserInterceptor } from '../interceptors/auth-user-interceptor.service';
