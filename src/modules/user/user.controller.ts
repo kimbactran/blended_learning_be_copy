@@ -47,7 +47,7 @@ export class UserController {
     }
 
     @Get(':address')
-    @Auth([RoleType.USER])
+    // @Auth([RoleType.USER])
     @HttpCode(HttpStatus.OK)
     @ApiResponse({
         status: HttpStatus.OK,

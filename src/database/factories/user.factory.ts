@@ -2,21 +2,24 @@ import { define } from 'typeorm-seeding';
 
 import { RoleType } from '../../constants';
 import { UserEntity } from '../../modules/user/user.entity';
+import { UserContactEntity } from '../../modules/user/user-contact.entity';
 
 define(UserEntity, (faker) => {
-    const gender = faker.random.number(1);
-    const firstName = faker.name.firstName(gender);
-    const lastName = faker.name.lastName(gender);
-    const email = faker.internet.email(firstName, lastName);
-    const phone = faker.phone.phoneNumber();
-
+    const address = faker.random.alphaNumeric(24);
+    const name = faker.name.findName();
+    const username = faker.internet.userName(name);
+    const bio = faker.lorem.paragraph();
     const user = new UserEntity();
-    user.firstName = firstName;
-    user.lastName = lastName;
-    user.email = email;
+    const contact = new UserContactEntity();
+
+    user.address = address;
+    user.username = username;
     user.role = RoleType.USER;
-    user.password = '111111';
-    user.phone = phone;
+    user.bio = bio;
+
+    contact.userAddress = address;
+
+    user.contact = contact;
 
     return user;
 });
