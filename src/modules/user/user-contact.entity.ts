@@ -9,12 +9,12 @@ import {
 import type { IAbstractEntity } from '../../common/abstract.entity';
 import { AbstractEntity } from '../../common/abstract.entity';
 import { UseDto } from '../../decorators';
-import type { UserDtoOptions } from './dtos/user.dto';
-import { UserDto } from './dtos/user.dto';
+import type { UserContactDtoOptions } from './dtos/user-contact.dto';
+import { UserContactDto } from './dtos/user-contact.dto';
 import type { IUserEntity } from './user.entity';
 import { UserEntity } from './user.entity';
 
-export interface IUserContactEntity extends IAbstractEntity<UserDto> {
+export interface IUserContactEntity extends IAbstractEntity<UserContactDto> {
     id: Uuid;
 
     twitter?: string;
@@ -29,9 +29,9 @@ export interface IUserContactEntity extends IAbstractEntity<UserDto> {
 }
 
 @Entity({ name: 'user_contact' })
-@UseDto(UserDto)
+@UseDto(UserContactDto)
 export class UserContactEntity
-    extends AbstractEntity<UserDto, UserDtoOptions>
+    extends AbstractEntity<UserContactDto, UserContactDtoOptions>
     implements IUserContactEntity
 {
     @PrimaryGeneratedColumn('uuid')

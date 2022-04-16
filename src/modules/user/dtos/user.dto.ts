@@ -3,9 +3,13 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { AbstractDto } from '../../../common/dto/abstract.dto';
 import { RoleType } from '../../../constants';
 import type { UserEntity } from '../user.entity';
+import { UserContactDto } from './user-contact.dto';
 
 // TODO, remove this class and use constructor's second argument's type
-export type UserDtoOptions = Partial<{ isActive: boolean }>;
+export type UserDtoOptions = Partial<{
+    isActive: boolean;
+    excludeFields: boolean;
+}>;
 
 export class UserDto extends AbstractDto {
     @ApiProperty()
@@ -23,6 +27,9 @@ export class UserDto extends AbstractDto {
     @ApiProperty()
     bio: string;
 
+    @ApiPropertyOptional()
+    contact: UserContactDto;
+
     @ApiPropertyOptional({ enum: RoleType })
     role: RoleType;
 
@@ -30,7 +37,8 @@ export class UserDto extends AbstractDto {
     isActive?: boolean;
 
     constructor(user: UserEntity, options?: UserDtoOptions) {
-        super(user);
+        super(user, options);
+
         this.role = user.role;
         this.address = user.address;
         this.logo = user.logo;
@@ -38,5 +46,6 @@ export class UserDto extends AbstractDto {
         this.bio = user.bio;
         this.isActive = options?.isActive;
         this.username = user.username;
+        this.contact = user.contact?.toDto({ excludeFields: true });
     }
 }

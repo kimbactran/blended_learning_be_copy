@@ -40,6 +40,7 @@ export class AuthController {
         @Body() userLoginDto: UserLoginDto,
     ): Promise<LoginPayloadDto> {
         const userEntity = await this.authService.validateUser(userLoginDto);
+
         const token = await this.authService.createAccessToken({
             userAddress: userEntity.address,
             role: userEntity.role,

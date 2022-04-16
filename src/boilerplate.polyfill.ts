@@ -92,7 +92,7 @@ declare module 'typeorm' {
         paginate(
             this: SelectQueryBuilder<Entity>,
             pageOptionsDto: PageOptionsDto,
-            options?: Partial<{ takeAll: boolean }>,
+            options?: Partial<{ takeAll: boolean; keyName: string }>,
         ): Promise<[Entity[], PageMetaDto]>;
 
         leftJoinAndSelect<AliasEntity extends AbstractEntity, A extends string>(
@@ -182,11 +182,13 @@ QueryBuilder.prototype.searchByString = function (q, columnNames) {
 
 SelectQueryBuilder.prototype.paginate = async function (
     pageOptionsDto: PageOptionsDto,
-    options?: Partial<{ takeAll: boolean }>,
+    options?: Partial<{ takeAll: boolean; keyName: string }>,
 ) {
     if (!options?.takeAll) {
         this.skip(pageOptionsDto.skip).take(pageOptionsDto.take);
     }
+
+    const _keyName = options?.keyName ? options?.keyName : 'id';
 
     const itemCount = await this.getCount();
 
@@ -221,8 +223,9 @@ SelectQueryBuilder.prototype.paginate = async function (
             .join('_');
 
         const entity = entities.find(
-            (item) => item.id === id,
+            (item) => item[_keyName] === id,
         ) as AbstractEntity;
+
         const metaInfo: Record<string, string> =
             Reflect.getMetadata(VIRTUAL_COLUMN_KEY, entity) ?? {};
 

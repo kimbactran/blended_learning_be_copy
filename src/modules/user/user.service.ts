@@ -81,15 +81,19 @@ export class UserService {
         pageOptionsDto: UsersPageOptionsDto,
     ): Promise<PageDto<UserDto>> {
         const queryBuilder = this.userRepository.createQueryBuilder('user');
+
         const [items, pageMetaDto] = await queryBuilder.paginate(
             pageOptionsDto,
+            { keyName: 'address' },
         );
 
         return items.toPageDto(pageMetaDto);
     }
 
     async getUser(userAddress: string): Promise<UserDto> {
-        const queryBuilder = this.userRepository.createQueryBuilder('user');
+        const queryBuilder = this.userRepository
+            .createQueryBuilder('user')
+            .leftJoinAndSelect('user.contact', 'contact');
 
         queryBuilder.where('user.address = :userAddress', { userAddress });
 
@@ -99,7 +103,7 @@ export class UserService {
             throw new UserNotFoundException();
         }
 
-        return userEntity.toDto();
+        return userEntity.toDto({ excludeFields: true });
     }
 
     async createContact(

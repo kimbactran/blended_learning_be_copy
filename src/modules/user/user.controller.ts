@@ -3,6 +3,7 @@ import {
     Get,
     HttpCode,
     HttpStatus,
+    Param,
     Query,
     ValidationPipe,
 } from '@nestjs/common';
@@ -10,7 +11,7 @@ import { ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { PageDto } from '../../common/dto/page.dto';
 import { RoleType } from '../../constants';
-import { ApiPageOkResponse, Auth, UUIDParam } from '../../decorators';
+import { ApiPageOkResponse, Auth } from '../../decorators';
 import { UserDto } from './dtos/user.dto';
 import { UsersPageOptionsDto } from './dtos/users-page-options.dto';
 import { UserService } from './user.service';
@@ -53,7 +54,7 @@ export class UserController {
         description: 'Get users list',
         type: UserDto,
     })
-    getUser(@UUIDParam('address') userAddress: string): Promise<UserDto> {
+    getUser(@Param('address') userAddress: string): Promise<UserDto> {
         return this.userService.getUser(userAddress);
     }
 }

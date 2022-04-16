@@ -6,7 +6,6 @@ import { RoleType } from '../../constants';
 import { UseDto } from '../../decorators';
 import type { UserDtoOptions } from './dtos/user.dto';
 import { UserDto } from './dtos/user.dto';
-import type { IUserContactEntity } from './user-contact.entity';
 import { UserContactEntity } from './user-contact.entity';
 
 export interface IUserEntity extends IAbstractEntity<UserDto> {
@@ -22,7 +21,7 @@ export interface IUserEntity extends IAbstractEntity<UserDto> {
 
     bio: string;
 
-    contact: IUserContactEntity;
+    contact: UserContactEntity;
 }
 
 @Entity({ name: 'users' })
@@ -43,7 +42,7 @@ export class UserEntity
     @Column({ nullable: true })
     logo: string;
 
-    @Column({ nullable: false })
+    @Column({ nullable: true })
     background_banner: string;
 
     @Column({ nullable: true })
