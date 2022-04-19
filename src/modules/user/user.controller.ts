@@ -1,19 +1,24 @@
 import { PageDto } from '@common/dto/page.dto';
 import { RoleType } from '@constants/index';
-import { ApiPageOkResponse, Auth } from '@decorators/index';
+import { ApiPageOkResponse, Auth, AuthUser } from '@decorators/index';
 import {
+    Body,
     Controller,
     Get,
     HttpCode,
     HttpStatus,
     Param,
+    Put,
     Query,
+    UnauthorizedException,
     ValidationPipe,
 } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 
+import { CreateContactDto } from './dtos/create-contact.dto';
 import { UserDto } from './dtos/user.dto';
 import { UsersPageOptionsDto } from './dtos/users-page-options.dto';
+import { UserEntity } from './user.entity';
 import { UserService } from './user.service';
 
 @Controller('users')
@@ -33,7 +38,7 @@ export class UserController {
     // }
 
     @Get()
-    @Auth([RoleType.USER])
+    @Auth([RoleType.ADMIN])
     @HttpCode(HttpStatus.OK)
     @ApiPageOkResponse({
         description: 'Get users list',
@@ -47,14 +52,35 @@ export class UserController {
     }
 
     @Get(':address')
-    // @Auth([RoleType.USER])
+    @Auth([RoleType.USER])
     @HttpCode(HttpStatus.OK)
     @ApiResponse({
         status: HttpStatus.OK,
-        description: 'Get users list',
+        description: 'Get user info',
         type: UserDto,
     })
-    getUser(@Param('address') userAddress: string): Promise<UserDto> {
+    getUser(
+        @Param('address') userAddress: string,
+        @AuthUser() user: UserEntity,
+    ): Promise<UserDto> {
+        if (user.address !== userAddress) {
+            throw new UnauthorizedException();
+        }
+
         return this.userService.getUser(userAddress);
+    }
+
+    @Put('/contact')
+    @Auth([RoleType.USER, RoleType.ADMIN])
+    @HttpCode(HttpStatus.ACCEPTED)
+    @ApiResponse({
+        status: HttpStatus.ACCEPTED,
+        description: 'Update user contact',
+    })
+    updateUserContact(
+        @AuthUser() user: UserEntity,
+        @Body() updateContact: CreateContactDto,
+    ): Promise<void> {
+        return this.userService.updateUserContact(user.address, updateContact);
     }
 }

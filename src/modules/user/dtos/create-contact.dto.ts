@@ -1,15 +1,15 @@
-import { EmailFieldOptional, URLFieldOptional } from '@decorators/index';
+import { StringFieldOptional } from '@decorators/index';
 
 export class CreateContactDto {
-    @URLFieldOptional()
+    @StringFieldOptional()
     twitter: string;
 
-    @URLFieldOptional()
+    @StringFieldOptional()
     facebook: string;
 
-    @EmailFieldOptional()
+    @StringFieldOptional()
     email: string;
 
-    @URLFieldOptional()
+    @StringFieldOptional()
     behance: string;
 }

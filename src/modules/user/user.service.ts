@@ -1,9 +1,8 @@
 import type { PageDto } from '@common/dto/page.dto';
 import { UserNotFoundException } from '@exceptions/index';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { AwsS3Service } from '@sharedServices/aws-s3.service';
-import { ValidatorService } from '@sharedServices/validator.service';
 import { plainToClass } from 'class-transformer';
 import type { FindConditions } from 'typeorm';
 import { Transactional } from 'typeorm-transactional-cls-hooked';
@@ -17,12 +16,13 @@ import type { UsersPageOptionsDto } from './dtos/users-page-options.dto';
 import type { UserEntity } from './user.entity';
 import { UserRepository } from './user.repository';
 import type { UserContactEntity } from './user-contact.entity';
+import { UserContactRepository } from './user-contact.repository';
 
 @Injectable()
 export class UserService {
     constructor(
         private userRepository: UserRepository,
-        private validatorService: ValidatorService,
+        private userContactRepository: UserContactRepository,
         private awsS3Service: AwsS3Service,
         private commandBus: CommandBus,
     ) {}
@@ -113,5 +113,27 @@ export class UserService {
         return this.commandBus.execute<CreateContactCommand, UserContactEntity>(
             new CreateContactCommand(userAddress, createContactDto),
         );
+    }
+
+    async updateUserContact(
+        userAddress: string,
+        updateContact: CreateContactDto,
+    ): Promise<void> {
+        const queryBuilder = this.userContactRepository
+            .createQueryBuilder('contact')
+            .where('contact.user_address = :userAddress', { userAddress });
+
+        const contactEntity = await queryBuilder.getOne();
+
+        if (!contactEntity) {
+            throw new NotFoundException();
+        }
+
+        const updatedContact = this.userContactRepository.merge(
+            contactEntity,
+            updateContact,
+        );
+
+        await this.userContactRepository.save(updatedContact);
     }
 }
