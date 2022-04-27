@@ -104,7 +104,7 @@ export class ApiConfigService {
             database: this.getString('DB_DATABASE'),
             subscribers: [UserSubscriber],
             migrationsRun: true,
-            logging: true,
+            logging: this.getBoolean('ENABLE_ORM_LOGS'),
             namingStrategy: new SnakeNamingStrategy(),
         };
     }

@@ -35,16 +35,12 @@ describe('AuthController (e2e)', () => {
         await app.init();
     });
 
-    it('/auth/register (POST)', () => {
+    it('Register with address', () => {
         const req = request(app.getHttpServer())
             .post('/auth/register')
-            // .field('firstName', 'John')
-            // .field('lastName', 'Smith')
-            // .field('email', 'john@smith.com')
-            // .field('password', 'password')
             .send({
-                address: 'asc81234jkdnjsdfy7124',
-                username: 'user1',
+                address: 'asc81234jk232dnjsdfy7124',
+                username: 'user12',
                 logo: 'string.logo',
                 background_banner: 'string.bg',
                 bio: 'bio acsad',
@@ -54,27 +50,46 @@ describe('AuthController (e2e)', () => {
         return req;
     });
 
-    it('/auth/login (POST)', async () => {
+    it('Login with registered address', async () => {
         const response = await request(app.getHttpServer())
             .post('/auth/login')
             .send({
-                address: 'asc81234jkdnjsdfy7124',
+                address: 'asc81234jk232dnjsdfy7124',
             })
             .expect(200);
 
         accessToken = response.body.token.accessToken;
     });
 
-    it('/v1/auth/me (GET)', () => {
+    // it('Get current logged in address', () => {
+    //     const session = getNamespace(sessionName);
+
+    //     session.run(async () => {
+    //         const res = await request(app.getHttpServer())
+    //             .get('/auth/me')
+    //             .set('Authorization', 'Bearer' + accessToken)
+    //             .expect(200);
+
+    //         return res;
+    //     });
+    // });
+
+    it('Update contact', () => {
         const session = getNamespace(sessionName);
 
         session.run(async () => {
-            const res = await request(app.getHttpServer())
-                .get('/auth/me')
-                .set('Authorization', 'Bearer' + accessToken)
-                .expect(200);
+            const req = request(app.getHttpServer())
+                .put('/users/contact')
+                .set('Authorization', 'Bearer ' + accessToken)
+                .send({
+                    twitter: '2323',
+                    facebook: 'use23232r12',
+                    email: 'string.logo',
+                    behance: 'string.bg',
+                })
+                .expect(202);
 
-            return res;
+            return req;
         });
     });
 

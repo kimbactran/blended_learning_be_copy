@@ -1,9 +1,19 @@
 {
-  "moduleFileExtensions": ["js", "json", "ts"],
-  "rootDir": ".",
-  "testEnvironment": "node",
-  "testRegex": ".e2e-spec.ts$",
-  "transform": {
-    "^.+\\.(t|j)s$": "ts-jest"
-  }
+    "moduleFileExtensions": ["js", "json", "ts"],
+    "rootDir": ".",
+    "testEnvironment": "node",
+    "testRegex": ".e2e-spec.ts$",
+    "transform": {
+        "^.+\\.(t|j)s$": "ts-jest"
+    },
+    "moduleNameMapper": {
+        "^@common/(.*)$": "src/common/$1",
+        "^@constants/(.*)$": "src/constants/$1",
+        "^@decorators/(.*)$": "src/decorators/$1",
+        "^@exceptions/(.*)$": "src/exceptions/$1",
+        "^@modules/(.*)$": "src/modules/$1",
+        "^@sharedServices/(.*)$": "src/shared/services/$1",
+        "^@user/(.*)$": "src/modules/user/$1",
+        "^@validators/(.*)$": "src/validators/$1"
+    }
 }

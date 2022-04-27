@@ -5,12 +5,15 @@ import { define, factory } from 'typeorm-seeding';
 
 define(UserContactEntity, (faker) => {
     const facebook = faker.name.findName();
+    const twitter = faker.name.findName();
+    const email = faker.internet.email();
+    const behance = faker.name.findName();
 
     const contact = new UserContactEntity();
     contact.facebook = facebook;
-    contact.twitter = facebook;
-    contact.behance = facebook;
-    contact.email = facebook;
+    contact.twitter = twitter;
+    contact.behance = behance;
+    contact.email = email;
     contact.userAddress = factory(UserEntity)({ roles: [] }) as any;
 
     return contact;

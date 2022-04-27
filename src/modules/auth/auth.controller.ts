@@ -10,7 +10,6 @@ import {
     HttpCode,
     HttpStatus,
     Post,
-    Version,
 } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { UserDto } from '@user/dtos/user.dto';
@@ -63,7 +62,6 @@ export class AuthController {
         });
     }
 
-    @Version('1')
     @Get('me')
     @HttpCode(HttpStatus.OK)
     @Auth([RoleType.USER, RoleType.ADMIN])
