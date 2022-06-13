@@ -140,6 +140,20 @@ export class ApiConfigService {
         };
     }
 
+    get fractalIdConfig() {
+        return {
+            frontendServer: this.getString('FRONTEND_SERVER'),
+            authServer: this.getString('AUTH_SERVER'),
+            resourceServer: this.getString('RESOURCE_SERVER'),
+
+            client_id: this.getString('CLIENT_ID'),
+            client_secret: this.getString('CLIENT_SECRET'),
+
+            scope: this.getString('SCOPE'),
+            redirect_uri: this.getString('REDIRECT_URI'),
+        };
+    }
+
     get appConfig() {
         return {
             port: this.getString('PORT'),

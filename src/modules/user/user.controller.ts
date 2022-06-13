@@ -52,7 +52,7 @@ export class UserController {
     }
 
     @Get(':address')
-    @Auth([RoleType.USER])
+    @Auth([RoleType.USER, RoleType.ADMIN])
     @HttpCode(HttpStatus.OK)
     @ApiResponse({
         status: HttpStatus.OK,
@@ -67,7 +67,7 @@ export class UserController {
             throw new UnauthorizedException();
         }
 
-        return this.userService.getUser(userAddress);
+        return this.userService.getUserByAddress(userAddress);
     }
 
     @Put('/contact')
@@ -83,4 +83,18 @@ export class UserController {
     ): Promise<void> {
         return this.userService.updateUserContact(user.address, updateContact);
     }
+
+    @Get('search')
+    @Auth([RoleType.USER])
+    @HttpCode(HttpStatus.OK)
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description: 'Get user info',
+        type: UserDto,
+    })
+    searchUser(@Query('q') queryString: string): Promise<UserDto> {
+        return this.userService.findUser(queryString);
+    }
+
+    // @Get('/kyc-callback')
 }

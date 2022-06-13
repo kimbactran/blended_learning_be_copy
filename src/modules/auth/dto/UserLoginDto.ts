@@ -5,4 +5,8 @@ export class UserLoginDto {
     @IsString()
     @ApiProperty()
     readonly address: string;
+
+    @IsString()
+    @ApiProperty()
+    readonly password: string;
 }

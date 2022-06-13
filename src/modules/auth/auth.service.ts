@@ -1,4 +1,5 @@
 // import { validateHash } from '@common/utils';
+import { validateHash } from '@common/utils';
 import type { RoleType } from '@constants/index';
 import { TokenType } from '@constants/index';
 import { UserNotFoundException } from '@exceptions/index';
@@ -43,14 +44,14 @@ export class AuthService {
             throw new UserNotFoundException();
         }
 
-        // const isPasswordValid = await validateHash(
-        //     userLoginDto.password,
-        //     user?.password,
-        // );
+        const isPasswordValid = await validateHash(
+            userLoginDto.password,
+            user?.password,
+        );
 
-        // if (!isPasswordValid) {
-        //     throw new UserNotFoundException();
-        // }
+        if (!isPasswordValid) {
+            throw new UserNotFoundException();
+        }
 
         return user;
     }

@@ -27,6 +27,9 @@ export class UserDto extends AbstractDto {
     @ApiProperty()
     bio: string;
 
+    @ApiProperty()
+    email?: string;
+
     @ApiPropertyOptional()
     contact: UserContactDto;
 
@@ -44,6 +47,7 @@ export class UserDto extends AbstractDto {
         this.logo = user.logo;
         this.background_banner = user.background_banner;
         this.bio = user.bio;
+        this.email = user.email;
         this.isActive = options?.isActive;
         this.username = user.username;
         this.contact = user.contact?.toDto({ excludeFields: true });

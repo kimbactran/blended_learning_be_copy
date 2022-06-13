@@ -58,6 +58,32 @@ export class UserService {
         return queryBuilder.getOne();
     }
 
+    async findUser(queryString: string): Promise<UserDto> {
+        const queryBuilder = this.userRepository
+            .createQueryBuilder('user')
+            .leftJoinAndSelect<UserEntity, 'user'>('user.contact', 'contact');
+
+        queryBuilder.orWhere('user.address = :address', {
+            address: queryString,
+        });
+
+        queryBuilder.orWhere('user.username = :username', {
+            username: queryString,
+        });
+
+        queryBuilder.orWhere('user.email = :email', {
+            email: queryString,
+        });
+
+        const userEntity = await queryBuilder.getOne();
+
+        if (!userEntity) {
+            throw new UserNotFoundException();
+        }
+
+        return userEntity.toDto({ excludeFields: true });
+    }
+
     @Transactional()
     async createUser(userRegisterDto: UserRegisterDto): Promise<UserEntity> {
         const user = this.userRepository.create(userRegisterDto);
@@ -90,7 +116,7 @@ export class UserService {
         return items.toPageDto(pageMetaDto);
     }
 
-    async getUser(userAddress: string): Promise<UserDto> {
+    async getUserByAddress(userAddress: string): Promise<UserDto> {
         const queryBuilder = this.userRepository
             .createQueryBuilder('user')
             .leftJoinAndSelect('user.contact', 'contact');
