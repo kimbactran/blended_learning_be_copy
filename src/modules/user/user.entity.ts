@@ -34,7 +34,7 @@ export class UserEntity
     extends AbstractEntity<UserDto, UserDtoOptions>
     implements IUserEntity
 {
-    @Column({ type: 'enum', enum: RoleType, default: RoleType.USER })
+    @Column({ type: 'enum', enum: RoleType, default: RoleType.STUDENT })
     role: RoleType;
 
     @PrimaryColumn({ unique: true, nullable: false })

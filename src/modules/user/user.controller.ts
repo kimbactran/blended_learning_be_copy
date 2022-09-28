@@ -52,7 +52,7 @@ export class UserController {
     }
 
     @Get(':address')
-    @Auth([RoleType.USER, RoleType.ADMIN])
+    @Auth([RoleType.TEACHER, RoleType.ADMIN])
     @HttpCode(HttpStatus.OK)
     @ApiResponse({
         status: HttpStatus.OK,
@@ -71,7 +71,7 @@ export class UserController {
     }
 
     @Put('/contact')
-    @Auth([RoleType.USER, RoleType.ADMIN])
+    @Auth([RoleType.TEACHER, RoleType.ADMIN])
     @HttpCode(HttpStatus.ACCEPTED)
     @ApiResponse({
         status: HttpStatus.ACCEPTED,
@@ -85,7 +85,7 @@ export class UserController {
     }
 
     @Get('search')
-    @Auth([RoleType.USER])
+    @Auth([RoleType.TEACHER])
     @HttpCode(HttpStatus.OK)
     @ApiResponse({
         status: HttpStatus.OK,
