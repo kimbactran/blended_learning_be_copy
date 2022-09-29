@@ -2,30 +2,22 @@ import type { IAbstractEntity } from '@common/abstract.entity';
 import { AbstractEntity } from '@common/abstract.entity';
 import { RoleType } from '@constants/index';
 import { UseDto } from '@decorators/index';
-import { Column, Entity, OneToOne, PrimaryColumn } from 'typeorm';
+import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 import type { UserDtoOptions } from './dtos/user.dto';
 import { UserDto } from './dtos/user.dto';
-import { UserContactEntity } from './user-contact.entity';
+import { UserProfileEntity } from './user-profile.entity';
 
 export interface IUserEntity extends IAbstractEntity<UserDto> {
+    id: Uuid;
+
     role: RoleType;
 
-    username: string;
+    email: string;
 
-    address: string;
+    password: string;
 
-    logo: string;
-
-    background_banner: string;
-
-    email?: string;
-
-    password?: string;
-
-    bio: string;
-
-    contact: UserContactEntity;
+    profile: UserProfileEntity;
 }
 
 @Entity({ name: 'users' })
@@ -34,30 +26,18 @@ export class UserEntity
     extends AbstractEntity<UserDto, UserDtoOptions>
     implements IUserEntity
 {
+    @PrimaryGeneratedColumn('uuid')
+    id: Uuid;
+
     @Column({ type: 'enum', enum: RoleType, default: RoleType.STUDENT })
     role: RoleType;
 
-    @PrimaryColumn({ unique: true, nullable: false })
-    address: string;
-
     @Column({ unique: true, nullable: false })
-    username: string;
+    email: string;
 
-    @Column({ nullable: true })
-    logo: string;
+    @Column({ nullable: false })
+    password: string;
 
-    @Column({ unique: true, nullable: true })
-    email?: string;
-
-    @Column({ nullable: true })
-    password?: string;
-
-    @Column({ nullable: true })
-    background_banner: string;
-
-    @Column({ nullable: true })
-    bio: string;
-
-    @OneToOne(() => UserContactEntity, (userContact) => userContact.user)
-    contact: UserContactEntity;
+    @OneToOne(() => UserProfileEntity, (userProfile) => userProfile.user)
+    profile: UserProfileEntity;
 }

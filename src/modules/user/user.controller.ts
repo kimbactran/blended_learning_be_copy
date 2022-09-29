@@ -15,7 +15,7 @@ import {
 } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 
-import { CreateContactDto } from './dtos/create-contact.dto';
+import { CreateProfileDto } from './dtos/create-profile.dto';
 import { UserDto } from './dtos/user.dto';
 import { UsersPageOptionsDto } from './dtos/users-page-options.dto';
 import { UserEntity } from './user.entity';
@@ -25,17 +25,6 @@ import { UserService } from './user.service';
 @ApiTags('users')
 export class UserController {
     constructor(private userService: UserService) {}
-
-    // @Get('admin')
-    // @Auth([RoleType.ADMIN])
-    // @HttpCode(HttpStatus.OK)
-    // @UseLanguageInterceptor()
-    // @ApiOkResponse()
-    // admin(@AuthUser() user: UserEntity) {
-    //     return {
-    //         text: `admin ${user.firstName}`,
-    //     };
-    // }
 
     @Get()
     @Auth([RoleType.ADMIN])
@@ -51,7 +40,7 @@ export class UserController {
         return this.userService.getUsers(pageOptionsDto);
     }
 
-    @Get(':address')
+    @Get(':id')
     @Auth([RoleType.TEACHER, RoleType.ADMIN])
     @HttpCode(HttpStatus.OK)
     @ApiResponse({
@@ -60,32 +49,32 @@ export class UserController {
         type: UserDto,
     })
     getUser(
-        @Param('address') userAddress: string,
+        @Param('id') userId: string,
         @AuthUser() user: UserEntity,
     ): Promise<UserDto> {
-        if (user.address !== userAddress) {
+        if (user.id !== userId) {
             throw new UnauthorizedException();
         }
 
-        return this.userService.getUserByAddress(userAddress);
+        return this.userService.getUserById(userId);
     }
 
-    @Put('/contact')
+    @Put('/profile')
     @Auth([RoleType.TEACHER, RoleType.ADMIN])
     @HttpCode(HttpStatus.ACCEPTED)
     @ApiResponse({
         status: HttpStatus.ACCEPTED,
-        description: 'Update user contact',
+        description: 'Update user profile',
     })
-    updateUserContact(
+    updateUserProfile(
         @AuthUser() user: UserEntity,
-        @Body() updateContact: CreateContactDto,
+        @Body() updateProfile: CreateProfileDto,
     ): Promise<void> {
-        return this.userService.updateUserContact(user.address, updateContact);
+        return this.userService.updateUserProfile(user.id, updateProfile);
     }
 
     @Get('search')
-    @Auth([RoleType.TEACHER])
+    @Auth([RoleType.TEACHER, RoleType.ADMIN])
     @HttpCode(HttpStatus.OK)
     @ApiResponse({
         status: HttpStatus.OK,
@@ -95,6 +84,4 @@ export class UserController {
     searchUser(@Query('q') queryString: string): Promise<UserDto> {
         return this.userService.findUser(queryString);
     }
-
-    // @Get('/kyc-callback')
 }

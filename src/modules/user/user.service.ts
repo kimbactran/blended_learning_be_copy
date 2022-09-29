@@ -1,4 +1,5 @@
 import type { PageDto } from '@common/dto/page.dto';
+import { Gender } from '@constants/index';
 import { UserNotFoundException } from '@exceptions/index';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
@@ -9,20 +10,20 @@ import { Transactional } from 'typeorm-transactional-cls-hooked';
 
 import type { Optional } from '../../types';
 import { UserRegisterDto } from '../auth/dto/UserRegisterDto';
-import { CreateContactCommand } from './commands/create-contact.command';
-import { CreateContactDto } from './dtos/create-contact.dto';
+import { CreateProfileCommand } from './commands/create-profile.command';
+import { CreateProfileDto } from './dtos/create-profile.dto';
 import type { UserDto } from './dtos/user.dto';
 import type { UsersPageOptionsDto } from './dtos/users-page-options.dto';
 import type { UserEntity } from './user.entity';
 import { UserRepository } from './user.repository';
-import type { UserContactEntity } from './user-contact.entity';
-import { UserContactRepository } from './user-contact.repository';
+import type { UserProfileEntity } from './user-profile.entity';
+import { UserProfileRepository } from './user-profile.repository';
 
 @Injectable()
 export class UserService {
     constructor(
         private userRepository: UserRepository,
-        private userContactRepository: UserContactRepository,
+        private userProfileRepository: UserProfileRepository,
         private awsS3Service: AwsS3Service,
         private commandBus: CommandBus,
     ) {}
@@ -41,7 +42,7 @@ export class UserService {
     ): Promise<Optional<UserEntity>> {
         const queryBuilder = this.userRepository
             .createQueryBuilder('user')
-            .leftJoinAndSelect<UserEntity, 'user'>('user.contact', 'contact');
+            .leftJoinAndSelect<UserEntity, 'user'>('user.profile', 'profile');
 
         if (options.username) {
             queryBuilder.orWhere('user.username = :username', {
@@ -61,7 +62,7 @@ export class UserService {
     async findUser(queryString: string): Promise<UserDto> {
         const queryBuilder = this.userRepository
             .createQueryBuilder('user')
-            .leftJoinAndSelect<UserEntity, 'user'>('user.contact', 'contact');
+            .leftJoinAndSelect<UserEntity, 'user'>('user.profile', 'profile');
 
         queryBuilder.orWhere('user.address = :address', {
             address: queryString,
@@ -90,13 +91,11 @@ export class UserService {
 
         await this.userRepository.save(user);
 
-        user.contact = await this.createContact(
-            user.address,
-            plainToClass(CreateContactDto, {
-                twitter: '',
-                facebook: '',
-                email: '',
-                behance: '',
+        user.profile = await this.createProfile(
+            user.id,
+            plainToClass(CreateProfileDto, {
+                name: '',
+                gender: Gender.MALE,
             }),
         );
 
@@ -116,12 +115,12 @@ export class UserService {
         return items.toPageDto(pageMetaDto);
     }
 
-    async getUserByAddress(userAddress: string): Promise<UserDto> {
+    async getUserById(userId: string): Promise<UserDto> {
         const queryBuilder = this.userRepository
             .createQueryBuilder('user')
-            .leftJoinAndSelect('user.contact', 'contact');
+            .leftJoinAndSelect('user.profile', 'profile');
 
-        queryBuilder.where('user.address = :userAddress', { userAddress });
+        queryBuilder.where('user.id = :userId', { userId });
 
         const userEntity = await queryBuilder.getOne();
 
@@ -132,34 +131,34 @@ export class UserService {
         return userEntity.toDto({ excludeFields: true });
     }
 
-    async createContact(
-        userAddress: string,
-        createContactDto: CreateContactDto,
-    ): Promise<UserContactEntity> {
-        return this.commandBus.execute<CreateContactCommand, UserContactEntity>(
-            new CreateContactCommand(userAddress, createContactDto),
+    async createProfile(
+        userId: Uuid,
+        createProfileDto: CreateProfileDto,
+    ): Promise<UserProfileEntity> {
+        return this.commandBus.execute<CreateProfileCommand, UserProfileEntity>(
+            new CreateProfileCommand(userId, createProfileDto),
         );
     }
 
-    async updateUserContact(
-        userAddress: string,
-        updateContact: CreateContactDto,
+    async updateUserProfile(
+        userId: string,
+        updateProfile: CreateProfileDto,
     ): Promise<void> {
-        const queryBuilder = this.userContactRepository
-            .createQueryBuilder('contact')
-            .where('contact.user_address = :userAddress', { userAddress });
+        const queryBuilder = this.userProfileRepository
+            .createQueryBuilder('profile')
+            .where('profile.user_id = :userId', { userId });
 
-        const contactEntity = await queryBuilder.getOne();
+        const profileEntity = await queryBuilder.getOne();
 
-        if (!contactEntity) {
+        if (!profileEntity) {
             throw new NotFoundException();
         }
 
-        const updatedContact = this.userContactRepository.merge(
-            contactEntity,
-            updateContact,
+        const updatedProfile = this.userProfileRepository.merge(
+            profileEntity,
+            updateProfile,
         );
 
-        await this.userContactRepository.save(updatedContact);
+        await this.userProfileRepository.save(updatedProfile);
     }
 }

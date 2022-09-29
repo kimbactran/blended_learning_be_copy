@@ -3,17 +3,17 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AwsS3Service } from '@sharedServices/aws-s3.service';
 import { ValidatorService } from '@sharedServices/validator.service';
 
-import { CreateContactHandler } from './commands/create-contact.command';
+import { CreateProfileHandler } from './commands/create-profile.command';
 import { UserController } from './user.controller';
 import { UserRepository } from './user.repository';
 import { UserService } from './user.service';
-import { UserContactRepository } from './user-contact.repository';
+import { UserProfileRepository } from './user-profile.repository';
 
-export const handlers = [CreateContactHandler];
+export const handlers = [CreateProfileHandler];
 
 @Module({
     imports: [
-        TypeOrmModule.forFeature([UserRepository, UserContactRepository]),
+        TypeOrmModule.forFeature([UserRepository, UserProfileRepository]),
     ],
     controllers: [UserController],
     exports: [UserService],
