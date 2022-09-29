@@ -42,7 +42,7 @@ export class AuthController {
         const userEntity = await this.authService.validateUser(userLoginDto);
 
         const token = await this.authService.createAccessToken({
-            userAddress: userEntity.address,
+            userEmail: userEntity.email,
             role: userEntity.role,
         });
 

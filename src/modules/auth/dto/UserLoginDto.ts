@@ -4,7 +4,7 @@ import { IsString } from 'class-validator';
 export class UserLoginDto {
     @IsString()
     @ApiProperty()
-    readonly address: string;
+    readonly email: string;
 
     @IsString()
     @ApiProperty()

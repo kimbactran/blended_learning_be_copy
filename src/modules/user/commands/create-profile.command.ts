@@ -1,10 +1,9 @@
 import type { ICommand, ICommandHandler } from '@nestjs/cqrs';
 import { CommandHandler } from '@nestjs/cqrs';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 
 import type { CreateProfileDto } from '../dtos/create-profile.dto';
-import { UserProfileEntity } from '../user-profile.entity';
+import type { UserProfileEntity } from '../user-profile.entity';
+import { UserProfileRepository } from '../user-profile.repository';
 
 export class CreateProfileCommand implements ICommand {
     constructor(
@@ -17,10 +16,7 @@ export class CreateProfileCommand implements ICommand {
 export class CreateProfileHandler
     implements ICommandHandler<CreateProfileCommand, UserProfileEntity>
 {
-    constructor(
-        @InjectRepository(UserProfileEntity)
-        private userProfileRepository: Repository<UserProfileEntity>,
-    ) {}
+    constructor(private userProfileRepository: UserProfileRepository) {}
 
     execute(command: CreateProfileCommand) {
         const { userId, createProfileDto } = command;

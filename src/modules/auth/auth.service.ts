@@ -23,12 +23,12 @@ export class AuthService {
 
     async createAccessToken(data: {
         role: RoleType;
-        userAddress: string;
+        userEmail: string;
     }): Promise<TokenPayloadDto> {
         return new TokenPayloadDto({
             expiresIn: this.configService.authConfig.jwtExpirationTime,
             accessToken: await this.jwtService.signAsync({
-                userAddress: data.userAddress,
+                userAddress: data.userEmail,
                 type: TokenType.ACCESS_TOKEN,
                 role: data.role,
             }),
@@ -37,7 +37,7 @@ export class AuthService {
 
     async validateUser(userLoginDto: UserLoginDto): Promise<UserEntity> {
         const user = await this.userService.findOne({
-            address: userLoginDto.address,
+            email: userLoginDto.email,
         });
 
         if (!user) {

@@ -20,7 +20,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     }
 
     async validate(args: {
-        userAddress: string;
+        userEmail: string;
         role: RoleType;
         type: TokenType;
     }): Promise<UserEntity> {
@@ -29,7 +29,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         }
 
         const user = await this.userService.findOne({
-            address: args.userAddress,
+            email: args.userEmail,
             role: args.role,
         });
 
