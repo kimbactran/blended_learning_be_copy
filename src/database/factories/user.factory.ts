@@ -4,8 +4,8 @@ import { UserProfileEntity } from '@modules/user/user-profile.entity';
 import { define } from 'typeorm-seeding';
 
 define(UserEntity, (faker) => {
-    const email = faker.internet.email;
-    const password = faker.internet.password;
+    const email = faker.internet.email();
+    const password = '1111';
     const name = faker.name.findName();
     const user = new UserEntity();
     const profile = new UserProfileEntity();

@@ -20,19 +20,19 @@ export class CreateUserProfileTable1650028971952 implements MigrationInterface {
                 CONSTRAINT      "PK_894dc440ade508fba6831724ec6" PRIMARY KEY ("id")
             )
         `);
-        await queryRunner.query(`
-            ALTER TABLE "user_profile"
-            ADD CONSTRAINT "FK_abb56b47aedf8bf738ac23b6c15" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE
-        `);
+        // await queryRunner.query(`
+        //     ALTER TABLE "user_profile"
+        //     ADD CONSTRAINT "FK_abb56b47aedf8bf738ac23b6c15" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE
+        // `);
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`
             DROP TYPE "public"."users_gender"
         `);
-        await queryRunner.query(`
-            ALTER TABLE "user_profile" DROP CONSTRAINT "FK_abb56b47aedf8bf738ac23b6c15"
-        `);
+        // await queryRunner.query(`
+        //     ALTER TABLE "user_profile" DROP CONSTRAINT "FK_abb56b47aedf8bf738ac23b6c15"
+        // `);
         await queryRunner.query(`
             DROP TABLE "user_profile"
         `);
