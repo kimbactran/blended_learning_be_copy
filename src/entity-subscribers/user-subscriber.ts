@@ -24,7 +24,7 @@ export class UserSubscriber implements EntitySubscriberInterface<UserEntity> {
         const entity = event.entity as UserEntity;
 
         if (entity.password !== event.databaseEntity.password) {
-            entity.password = generateHash(entity.password);
+            entity.password = generateHash(entity.password!);
         }
     }
 }

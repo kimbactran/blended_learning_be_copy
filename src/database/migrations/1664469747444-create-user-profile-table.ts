@@ -5,7 +5,7 @@ export class CreateUserProfileTable1650028971952 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`
-            CREATE TYPE "public"."users_gender" AS ENUM('MALE', 'FEMALE')
+            CREATE TYPE "public"."user_gender" AS ENUM('MALE', 'FEMALE')
         `);
 
         await queryRunner.query(`
@@ -14,7 +14,7 @@ export class CreateUserProfileTable1650028971952 implements MigrationInterface {
                 "updated_at"    TIMESTAMP NOT NULL DEFAULT now(),
                 "id"            uuid NOT NULL DEFAULT uuid_generate_v4(),
                 "name"          character varying,
-                "gender"        "public"."users_gender" NOT NULL DEFAULT 'MALE',
+                "gender"        "public"."user_gender" NOT NULL DEFAULT 'MALE',
                 "user_id"       character varying,
                 CONSTRAINT      "REL_abb56b47aedf8bf738ac23b6c1" UNIQUE ("user_id"),
                 CONSTRAINT      "PK_894dc440ade508fba6831724ec6" PRIMARY KEY ("id")
@@ -22,13 +22,13 @@ export class CreateUserProfileTable1650028971952 implements MigrationInterface {
         `);
         // await queryRunner.query(`
         //     ALTER TABLE "user_profile"
-        //     ADD CONSTRAINT "FK_abb56b47aedf8bf738ac23b6c15" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE
+        //     ADD CONSTRAINT "FK_abb56b47aedf8bf738ac23b6c15" FOREIGN KEY ("user_id") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE
         // `);
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`
-            DROP TYPE "public"."users_gender"
+            DROP TYPE "public"."user_gender"
         `);
         // await queryRunner.query(`
         //     ALTER TABLE "user_profile" DROP CONSTRAINT "FK_abb56b47aedf8bf738ac23b6c15"

@@ -64,10 +64,9 @@ export class AuthController {
 
     @Get('me')
     @HttpCode(HttpStatus.OK)
-    @Auth([RoleType.STUDENT, RoleType.ADMIN])
+    @Auth([RoleType.STUDENT, RoleType.ADMIN, RoleType.TEACHER])
     @ApiOkResponse({ type: UserDto, description: 'current user info' })
     getCurrentUser(@AuthUser() user: UserEntity): UserDto {
-        // console.log(user)
         return user.toDto();
     }
 }

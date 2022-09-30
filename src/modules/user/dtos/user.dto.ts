@@ -15,9 +15,6 @@ export class UserDto extends AbstractDto {
     @ApiProperty()
     email: string;
 
-    @ApiProperty()
-    password: string;
-
     @ApiPropertyOptional()
     profile: UserProfileDto;
 
@@ -32,7 +29,6 @@ export class UserDto extends AbstractDto {
 
         this.role = user.role;
         this.email = user.email;
-        this.password = user.password;
         this.isActive = options?.isActive;
         this.profile = user.profile?.toDto({ excludeFields: true });
     }

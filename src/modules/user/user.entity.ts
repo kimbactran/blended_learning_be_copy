@@ -2,7 +2,15 @@ import type { IAbstractEntity } from '@common/abstract.entity';
 import { AbstractEntity } from '@common/abstract.entity';
 import { RoleType } from '@constants/index';
 import { UseDto } from '@decorators/index';
-import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { ClassroomEntity } from '@modules/classroom/entities/classroom.entity';
+import {
+    Column,
+    Entity,
+    JoinTable,
+    ManyToMany,
+    OneToOne,
+    PrimaryGeneratedColumn,
+} from 'typeorm';
 
 import type { UserDtoOptions } from './dtos/user.dto';
 import { UserDto } from './dtos/user.dto';
@@ -15,12 +23,12 @@ export interface IUserEntity extends IAbstractEntity<UserDto> {
 
     email: string;
 
-    password: string;
+    password?: string;
 
     profile: UserProfileEntity;
 }
 
-@Entity({ name: 'users' })
+@Entity({ name: 'user' })
 @UseDto(UserDto)
 export class UserEntity
     extends AbstractEntity<UserDto, UserDtoOptions>
@@ -35,9 +43,13 @@ export class UserEntity
     @Column({ unique: true, nullable: false })
     email: string;
 
-    @Column({ nullable: false })
-    password: string;
+    @Column({ nullable: true })
+    password?: string;
 
     @OneToOne(() => UserProfileEntity, (userProfile) => userProfile.user)
     profile: UserProfileEntity;
+
+    @ManyToMany(() => ClassroomEntity, (classroom) => classroom.users)
+    @JoinTable()
+    classrooms: ClassroomEntity[];
 }

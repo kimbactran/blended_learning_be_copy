@@ -28,7 +28,7 @@ export class AuthService {
         return new TokenPayloadDto({
             expiresIn: this.configService.authConfig.jwtExpirationTime,
             accessToken: await this.jwtService.signAsync({
-                userAddress: data.userEmail,
+                userEmail: data.userEmail,
                 type: TokenType.ACCESS_TOKEN,
                 role: data.role,
             }),
