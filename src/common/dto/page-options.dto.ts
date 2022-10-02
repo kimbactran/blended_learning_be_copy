@@ -2,7 +2,7 @@ import { Order } from '@constants/index';
 import {
     EnumFieldOptional,
     NumberFieldOptional,
-    StringFieldOptional,
+    // StringFieldOptional,
 } from '@decorators/index';
 
 export class PageOptionsDto {
@@ -30,6 +30,6 @@ export class PageOptionsDto {
         return (this.page - 1) * this.take;
     }
 
-    @StringFieldOptional()
-    readonly q?: string;
+    // @StringFieldOptional()
+    // readonly q?: string;
 }
