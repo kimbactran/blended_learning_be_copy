@@ -12,7 +12,9 @@ import type { Optional } from '../../types';
 import { UserRegisterDto } from '../auth/dto/UserRegisterDto';
 import { CreateProfileCommand } from './commands/create-profile.command';
 import { CreateProfileDto } from './dtos/create-profile.dto';
+import type { SearchUserDto } from './dtos/search-user.dto';
 import type { UserDto } from './dtos/user.dto';
+import type { UserProfileDto } from './dtos/user-profile.dto';
 import type { UsersPageOptionsDto } from './dtos/users-page-options.dto';
 import type { UserEntity } from './user.entity';
 import { UserRepository } from './user.repository';
@@ -37,52 +39,23 @@ export class UserService {
         return this.userRepository.findOne(findData);
     }
 
-    async findByAddressOrUsername(
-        options: Partial<{ username: string; address: string }>,
-    ): Promise<Optional<UserEntity>> {
+    async findUser(queryString: SearchUserDto): Promise<UserDto[]> {
+        const { email, name, gender } = queryString;
+
         const queryBuilder = this.userRepository
             .createQueryBuilder('user')
-            .leftJoinAndSelect<UserEntity, 'user'>('user.profile', 'profile');
+            .leftJoinAndSelect<UserEntity, 'user'>('user.profile', 'profile')
+            .where('user.email = :email', { email })
+            .andWhere('user.gender = :gender', { gender })
+            .andWhere('user.name = :name', { name });
 
-        if (options.username) {
-            queryBuilder.orWhere('user.username = :username', {
-                email: options.username,
-            });
-        }
-
-        if (options.address) {
-            queryBuilder.orWhere('user.address = :address', {
-                address: options.address,
-            });
-        }
-
-        return queryBuilder.getOne();
-    }
-
-    async findUser(queryString: string): Promise<UserDto> {
-        const queryBuilder = this.userRepository
-            .createQueryBuilder('user')
-            .leftJoinAndSelect<UserEntity, 'user'>('user.profile', 'profile');
-
-        queryBuilder.orWhere('user.address = :address', {
-            address: queryString,
-        });
-
-        queryBuilder.orWhere('user.username = :username', {
-            username: queryString,
-        });
-
-        queryBuilder.orWhere('user.email = :email', {
-            email: queryString,
-        });
-
-        const userEntity = await queryBuilder.getOne();
+        const userEntity = await queryBuilder.getMany();
 
         if (!userEntity) {
             throw new UserNotFoundException();
         }
 
-        return userEntity.toDto({ excludeFields: true });
+        return userEntity;
     }
 
     @Transactional()
@@ -105,11 +78,24 @@ export class UserService {
     async getUsers(
         pageOptionsDto: UsersPageOptionsDto,
     ): Promise<PageDto<UserDto>> {
-        const queryBuilder = this.userRepository.createQueryBuilder('user');
+        const { email, name } = pageOptionsDto;
+
+        const queryBuilder = this.userRepository
+            .createQueryBuilder('user')
+            .leftJoinAndSelect('user.profile', 'user_id');
+
+        if (email) {
+            queryBuilder.orWhere('user.email like :email', {
+                email: `%${email}%`,
+            });
+        }
+
+        if (name) {
+            queryBuilder.orWhere('user.name like :name', { name: `%${name}%` });
+        }
 
         const [items, pageMetaDto] = await queryBuilder.paginate(
             pageOptionsDto,
-            { keyName: 'address' },
         );
 
         return items.toPageDto(pageMetaDto);
@@ -143,7 +129,7 @@ export class UserService {
     async updateUserProfile(
         userId: string,
         updateProfile: CreateProfileDto,
-    ): Promise<void> {
+    ): Promise<{ user: UserProfileDto; success: boolean }> {
         const queryBuilder = this.userProfileRepository
             .createQueryBuilder('profile')
             .where('profile.user_id = :userId', { userId });
@@ -159,6 +145,16 @@ export class UserService {
             updateProfile,
         );
 
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { userId: userIdDB, ...rest } = updatedProfile;
+
         await this.userProfileRepository.save(updatedProfile);
+
+        return {
+            user: {
+                ...rest,
+            },
+            success: true,
+        };
     }
 }

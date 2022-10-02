@@ -10,13 +10,13 @@ import {
     Param,
     Put,
     Query,
-    UnauthorizedException,
     ValidationPipe,
 } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { CreateProfileDto } from './dtos/create-profile.dto';
 import { UserDto } from './dtos/user.dto';
+import type { UserProfileDto } from './dtos/user-profile.dto';
 import { UsersPageOptionsDto } from './dtos/users-page-options.dto';
 import { UserEntity } from './user.entity';
 import { UserService } from './user.service';
@@ -27,7 +27,7 @@ export class UserController {
     constructor(private userService: UserService) {}
 
     @Get()
-    @Auth([RoleType.ADMIN])
+    @Auth([RoleType.ADMIN, RoleType.TEACHER])
     @HttpCode(HttpStatus.OK)
     @ApiPageOkResponse({
         description: 'Get users list',
@@ -48,19 +48,12 @@ export class UserController {
         description: 'Get user info',
         type: UserDto,
     })
-    getUser(
-        @Param('id') userId: string,
-        @AuthUser() user: UserEntity,
-    ): Promise<UserDto> {
-        if (user.id !== userId) {
-            throw new UnauthorizedException();
-        }
-
+    getUser(@Param('id') userId: string): Promise<UserDto> {
         return this.userService.getUserById(userId);
     }
 
     @Put('/profile')
-    @Auth([RoleType.TEACHER, RoleType.ADMIN])
+    @Auth([RoleType.TEACHER, RoleType.ADMIN, RoleType.STUDENT])
     @HttpCode(HttpStatus.ACCEPTED)
     @ApiResponse({
         status: HttpStatus.ACCEPTED,
@@ -69,19 +62,19 @@ export class UserController {
     updateUserProfile(
         @AuthUser() user: UserEntity,
         @Body() updateProfile: CreateProfileDto,
-    ): Promise<void> {
+    ): Promise<{ user?: UserProfileDto; success: boolean }> {
         return this.userService.updateUserProfile(user.id, updateProfile);
     }
 
-    @Get('search')
-    @Auth([RoleType.TEACHER, RoleType.ADMIN])
-    @HttpCode(HttpStatus.OK)
-    @ApiResponse({
-        status: HttpStatus.OK,
-        description: 'Get user info',
-        type: UserDto,
-    })
-    searchUser(@Query('q') queryString: string): Promise<UserDto> {
-        return this.userService.findUser(queryString);
-    }
+    // @Get('search')
+    // @Auth([RoleType.TEACHER, RoleType.ADMIN])
+    // @HttpCode(HttpStatus.OK)
+    // @ApiResponse({
+    //     status: HttpStatus.OK,
+    //     description: 'Get user info',
+    //     type: UserDto,
+    // })
+    // searchUser(@Query() queryString: SearchUserDto): Promise<UserDto[]> {
+    //     return this.userService.findUser(queryString);
+    // }
 }

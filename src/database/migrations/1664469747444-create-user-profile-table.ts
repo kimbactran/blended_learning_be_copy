@@ -15,7 +15,7 @@ export class CreateUserProfileTable1650028971952 implements MigrationInterface {
                 "id"            uuid NOT NULL DEFAULT uuid_generate_v4(),
                 "name"          character varying,
                 "gender"        "public"."user_gender" NOT NULL DEFAULT 'MALE',
-                "user_id"       character varying,
+                "user_id"       uuid NOT NULL,
                 CONSTRAINT      "REL_abb56b47aedf8bf738ac23b6c1" UNIQUE ("user_id"),
                 CONSTRAINT      "PK_894dc440ade508fba6831724ec6" PRIMARY KEY ("id")
             )
