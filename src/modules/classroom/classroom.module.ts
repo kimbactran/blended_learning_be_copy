@@ -1,3 +1,4 @@
+import { UserRepository } from '@modules/user/user.repository';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ValidatorService } from '@sharedServices/validator.service';
@@ -7,7 +8,7 @@ import { ClassroomRepository } from './classroom.repository';
 import { ClassroomService } from './classroom.service';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([ClassroomRepository])],
+    imports: [TypeOrmModule.forFeature([ClassroomRepository, UserRepository])],
     controllers: [ClassroomController],
     exports: [ClassroomService],
     providers: [ClassroomService, ValidatorService],

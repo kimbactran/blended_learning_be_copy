@@ -1,12 +1,15 @@
 import type { IAbstractEntity } from '@common/abstract.entity';
 import { AbstractEntity } from '@common/abstract.entity';
 import { UseDto } from '@decorators/index';
+import { PostEntity } from '@modules/post/entities/post.entity';
 import { UserEntity } from '@modules/user/user.entity';
 import {
     Column,
     Entity,
+    JoinColumn,
     JoinTable,
     ManyToMany,
+    OneToMany,
     PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -21,6 +24,8 @@ export interface IClassroomEntity extends IAbstractEntity<ClassroomDto> {
     resources: string;
 
     users: UserEntity[];
+
+    posts?: PostEntity[];
 }
 
 @Entity({ name: 'classroom' })
@@ -39,6 +44,12 @@ export class ClassroomEntity
     resources: string;
 
     @ManyToMany(() => UserEntity, (user) => user.classrooms)
-    @JoinTable()
+    @JoinTable({
+        name: 'user_classroom',
+    })
     users: UserEntity[];
+
+    @OneToMany(() => PostEntity, (post) => post.user)
+    @JoinColumn()
+    posts: PostEntity[];
 }

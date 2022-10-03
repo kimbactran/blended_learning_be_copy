@@ -3,11 +3,14 @@ import { AbstractEntity } from '@common/abstract.entity';
 import { RoleType } from '@constants/index';
 import { UseDto } from '@decorators/index';
 import { ClassroomEntity } from '@modules/classroom/entities/classroom.entity';
+import { PostEntity } from '@modules/post/entities/post.entity';
 import {
     Column,
     Entity,
+    JoinColumn,
     JoinTable,
     ManyToMany,
+    OneToMany,
     OneToOne,
     PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -25,7 +28,9 @@ export interface IUserEntity extends IAbstractEntity<UserDto> {
 
     password?: string;
 
-    profile: UserProfileEntity;
+    profile?: UserProfileEntity;
+
+    posts?: PostEntity[];
 }
 
 @Entity({ name: 'user' })
@@ -50,6 +55,12 @@ export class UserEntity
     profile: UserProfileEntity;
 
     @ManyToMany(() => ClassroomEntity, (classroom) => classroom.users)
-    @JoinTable()
+    @JoinTable({
+        name: 'user_classroom',
+    })
     classrooms: ClassroomEntity[];
+
+    @OneToMany(() => PostEntity, (post) => post.user)
+    @JoinColumn()
+    posts: PostEntity[];
 }
