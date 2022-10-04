@@ -46,6 +46,14 @@ export class ClassroomEntity
     @ManyToMany(() => UserEntity, (user) => user.classrooms)
     @JoinTable({
         name: 'user_classroom',
+        joinColumn: {
+            name: 'classroom_id',
+            referencedColumnName: 'id',
+        },
+        inverseJoinColumn: {
+            name: 'user_id',
+            referencedColumnName: 'id',
+        },
     })
     users: UserEntity[];
 

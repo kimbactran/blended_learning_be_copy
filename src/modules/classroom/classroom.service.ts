@@ -46,16 +46,18 @@ export class ClassroomService {
             throw new UserNotFoundException();
         }
 
-        const classroom = await isExistedClassroom.getOne();
+        const classroom = await this.classroomRepository
+            .createQueryBuilder('classroom')
+            .leftJoinAndSelect('classroom.users', 'user')
+            .where('classroom.id = :classroomId', { classroomId })
+            .getOne();
         const students = await isExistedUsers.getMany();
 
         if (!classroom || !students) {
             throw new UserNotFoundException();
         }
 
-        // console.log(11111111111, classroom); dang loi - mai fix
-
-        classroom.users.push(...students);
+        classroom.users = [...students];
         await this.classroomRepository.save(classroom);
 
         return classroom;
