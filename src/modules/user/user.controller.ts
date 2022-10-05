@@ -66,6 +66,17 @@ export class UserController {
         return this.userService.updateUserProfile(user.id, updateProfile);
     }
 
+    @Get('classroom/:classroomId')
+    @Auth([RoleType.ADMIN, RoleType.TEACHER, RoleType.STUDENT])
+    @HttpCode(HttpStatus.OK)
+    @ApiPageOkResponse({
+        description: 'Get user list',
+        type: UserDto,
+    })
+    getClassroomsByUserId(@Param('classroomId') classroomId: string) {
+        return this.userService.getUsersByClassroomId(classroomId);
+    }
+
     // @Get('search')
     // @Auth([RoleType.TEACHER, RoleType.ADMIN])
     // @HttpCode(HttpStatus.OK)

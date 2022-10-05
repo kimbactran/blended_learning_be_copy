@@ -157,4 +157,20 @@ export class UserService {
             success: true,
         };
     }
+
+    async getUsersByClassroomId(classroomId: string): Promise<UserDto[]> {
+        const queryBuilder = this.userRepository
+            .createQueryBuilder('user')
+            .leftJoinAndSelect('user.profile', 'profile')
+            .leftJoin('user.classrooms', 'classroom')
+            .where('classroom.id = :classroomId', { classroomId });
+
+        const userEntity = await queryBuilder.getMany();
+
+        if (!userEntity) {
+            throw new UserNotFoundException();
+        }
+
+        return userEntity.toDtos({ excludeFields: true });
+    }
 }
