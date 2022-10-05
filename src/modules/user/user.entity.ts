@@ -4,6 +4,7 @@ import { RoleType } from '@constants/index';
 import { UseDto } from '@decorators/index';
 import { ClassroomEntity } from '@modules/classroom/entities/classroom.entity';
 import { PostEntity } from '@modules/post/entities/post.entity';
+import { PostStatEntity } from '@modules/post/entities/post-stat.entity';
 import {
     Column,
     Entity,
@@ -31,6 +32,8 @@ export interface IUserEntity extends IAbstractEntity<UserDto> {
     profile?: UserProfileEntity;
 
     posts?: PostEntity[];
+
+    postStats?: PostStatEntity[];
 }
 
 @Entity({ name: 'user' })
@@ -71,4 +74,7 @@ export class UserEntity
     @OneToMany(() => PostEntity, (post) => post.user)
     @JoinColumn()
     posts: PostEntity[];
+
+    @OneToMany(() => PostStatEntity, (postStat) => postStat.user)
+    postStats: PostStatEntity[];
 }

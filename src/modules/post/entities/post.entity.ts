@@ -3,10 +3,18 @@ import { AbstractEntity } from '@common/abstract.entity';
 import { UseDto } from '@decorators/index';
 import { ClassroomEntity } from '@modules/classroom/entities/classroom.entity';
 import { UserEntity } from '@modules/user/user.entity';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+    Column,
+    Entity,
+    JoinColumn,
+    ManyToOne,
+    OneToMany,
+    PrimaryGeneratedColumn,
+} from 'typeorm';
 
 import type { PostDtoOptions } from '../dto/post.dto';
 import { PostDto } from '../dto/post.dto';
+import { PostStatEntity } from './post-stat.entity';
 
 export interface IPostEntity extends IAbstractEntity<PostDto> {
     id: Uuid;
@@ -40,4 +48,8 @@ export class PostEntity
 
     @ManyToOne(() => ClassroomEntity, (classroom) => classroom.posts)
     classroom: ClassroomEntity;
+
+    @OneToMany(() => PostStatEntity, (postStat) => postStat.post)
+    @JoinColumn()
+    postStats: PostStatEntity[];
 }
