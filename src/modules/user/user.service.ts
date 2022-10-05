@@ -114,7 +114,9 @@ export class UserService {
             throw new UserNotFoundException();
         }
 
-        return userEntity.toDto({ excludeFields: true });
+        delete userEntity.password;
+
+        return userEntity;
     }
 
     async createProfile(

@@ -1,6 +1,6 @@
 import { UserNotFoundException } from '@exceptions/user-not-found.exception';
 import { UserRepository } from '@modules/user/user.repository';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Transactional } from 'typeorm-transactional-cls-hooked';
 
 import { ClassroomRepository } from './classroom.repository';
@@ -23,6 +23,19 @@ export class ClassroomService {
         const classroom = this.classroomRepository.create(createClassroomDto);
 
         await this.classroomRepository.save(classroom);
+
+        return classroom;
+    }
+
+    async getByClassroomId(classroomId: string): Promise<ClassroomDto> {
+        const classroom = await this.classroomRepository
+            .createQueryBuilder('classroom')
+            .where('classroom.id = :classroomId', { classroomId })
+            .getOne();
+
+        if (!classroom) {
+            throw new NotFoundException('Classroom not found!');
+        }
 
         return classroom;
     }

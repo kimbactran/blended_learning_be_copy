@@ -44,7 +44,18 @@ export class ClassroomController {
         return this.classroomService.joinStudentsToClass(joinClassroomDto);
     }
 
-    @Get(':userId')
+    @Get(':id')
+    @Auth([RoleType.ADMIN, RoleType.TEACHER, RoleType.STUDENT])
+    @HttpCode(HttpStatus.OK)
+    @ApiPageOkResponse({
+        description: 'Get classroom by id',
+        type: ClassroomDto,
+    })
+    getById(@Param('id') classroomId: string) {
+        return this.classroomService.getByClassroomId(classroomId);
+    }
+
+    @Get('/list-classrooms/:userId')
     @Auth([RoleType.ADMIN, RoleType.TEACHER, RoleType.STUDENT])
     @HttpCode(HttpStatus.OK)
     @ApiPageOkResponse({
