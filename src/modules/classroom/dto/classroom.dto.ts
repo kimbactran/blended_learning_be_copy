@@ -1,4 +1,5 @@
 import { AbstractDto } from '@common/dto/abstract.dto';
+import { StatusClassroom } from '@constants/status';
 import type { UserDto } from '@modules/user/dtos/user.dto';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
@@ -18,6 +19,9 @@ export class ClassroomDto extends AbstractDto {
     resources: string;
 
     @ApiPropertyOptional()
+    status?: StatusClassroom;
+
+    @ApiPropertyOptional()
     users: UserDto[];
 
     @ApiPropertyOptional()
@@ -28,6 +32,7 @@ export class ClassroomDto extends AbstractDto {
 
         this.title = classroom.title;
         this.resources = classroom.resources;
+        this.status = classroom.status;
         this.isActive = options?.isActive;
         this.users = classroom.users?.toDtos({ excludeFields: true });
     }
