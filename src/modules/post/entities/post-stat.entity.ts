@@ -25,7 +25,7 @@ export interface IPostStatEntity extends IAbstractEntity<PostStatDto> {
 
     user?: UserEntity;
 
-    posts?: PostEntity[];
+    post?: PostEntity;
 }
 
 @Entity({ name: 'post_stat' })
@@ -37,13 +37,13 @@ export class PostStatEntity
     @PrimaryGeneratedColumn('uuid')
     id: Uuid;
 
-    @Column({ nullable: false })
+    @Column({ nullable: false, default: 0 })
     upVote: number;
 
-    @Column({ nullable: false })
+    @Column({ nullable: false, default: 0 })
     downVote: number;
 
-    @Column({ nullable: false })
+    @Column({ nullable: false, default: 0 })
     isViewed: number;
 
     @ManyToOne(() => UserEntity, (user) => user.postStats)
