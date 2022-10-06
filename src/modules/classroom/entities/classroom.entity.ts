@@ -1,5 +1,6 @@
 import type { IAbstractEntity } from '@common/abstract.entity';
 import { AbstractEntity } from '@common/abstract.entity';
+import { StatusClassroom } from '@constants/status';
 import { UseDto } from '@decorators/index';
 import { PostEntity } from '@modules/post/entities/post.entity';
 import { UserEntity } from '@modules/user/user.entity';
@@ -23,7 +24,9 @@ export interface IClassroomEntity extends IAbstractEntity<ClassroomDto> {
 
     resources: string;
 
-    users: UserEntity[];
+    status?: StatusClassroom;
+
+    users?: UserEntity[];
 
     posts?: PostEntity[];
 }
@@ -42,6 +45,9 @@ export class ClassroomEntity
 
     @Column({ nullable: true })
     resources: string;
+
+    @Column({ nullable: false, default: StatusClassroom.ACTIVE })
+    status: StatusClassroom;
 
     @ManyToMany(() => UserEntity, (user) => user.classrooms)
     @JoinTable({

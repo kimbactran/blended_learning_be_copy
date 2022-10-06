@@ -75,6 +75,15 @@ export class UserService {
         return user;
     }
 
+    async createProfile(
+        userId: Uuid,
+        createProfileDto: CreateProfileDto,
+    ): Promise<UserProfileEntity> {
+        return this.commandBus.execute<CreateProfileCommand, UserProfileEntity>(
+            new CreateProfileCommand(userId, createProfileDto),
+        );
+    }
+
     async getUsers(
         pageOptionsDto: UsersPageOptionsDto,
     ): Promise<PageDto<UserDto>> {
@@ -101,7 +110,7 @@ export class UserService {
         return items.toPageDto(pageMetaDto);
     }
 
-    async getUserById(userId: string): Promise<UserDto> {
+    async getUserById(userId: string): Promise<UserEntity> {
         const queryBuilder = this.userRepository
             .createQueryBuilder('user')
             .leftJoinAndSelect('user.profile', 'profile');
@@ -119,13 +128,20 @@ export class UserService {
         return userEntity;
     }
 
-    async createProfile(
-        userId: Uuid,
-        createProfileDto: CreateProfileDto,
-    ): Promise<UserProfileEntity> {
-        return this.commandBus.execute<CreateProfileCommand, UserProfileEntity>(
-            new CreateProfileCommand(userId, createProfileDto),
-        );
+    async getUsersByClassroomId(classroomId: string): Promise<UserDto[]> {
+        const queryBuilder = this.userRepository
+            .createQueryBuilder('user')
+            .leftJoinAndSelect('user.profile', 'profile')
+            .leftJoin('user.classrooms', 'classroom')
+            .where('classroom.id = :classroomId', { classroomId });
+
+        const userEntity = await queryBuilder.getMany();
+
+        if (!userEntity) {
+            throw new UserNotFoundException();
+        }
+
+        return userEntity.toDtos({ excludeFields: true });
     }
 
     async updateUserProfile(
@@ -158,21 +174,5 @@ export class UserService {
             },
             success: true,
         };
-    }
-
-    async getUsersByClassroomId(classroomId: string): Promise<UserDto[]> {
-        const queryBuilder = this.userRepository
-            .createQueryBuilder('user')
-            .leftJoinAndSelect('user.profile', 'profile')
-            .leftJoin('user.classrooms', 'classroom')
-            .where('classroom.id = :classroomId', { classroomId });
-
-        const userEntity = await queryBuilder.getMany();
-
-        if (!userEntity) {
-            throw new UserNotFoundException();
-        }
-
-        return userEntity.toDtos({ excludeFields: true });
     }
 }
