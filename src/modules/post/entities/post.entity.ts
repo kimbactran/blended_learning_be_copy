@@ -2,6 +2,7 @@ import type { IAbstractEntity } from '@common/abstract.entity';
 import { AbstractEntity } from '@common/abstract.entity';
 import { UseDto } from '@decorators/index';
 import { ClassroomEntity } from '@modules/classroom/entities/classroom.entity';
+import { CommentEntity } from '@modules/comment/entities/comment.entity';
 import { UserEntity } from '@modules/user/user.entity';
 import {
     Column,
@@ -26,6 +27,8 @@ export interface IPostEntity extends IAbstractEntity<PostDto> {
     user?: UserEntity;
 
     classroom?: ClassroomEntity;
+
+    comments?: CommentEntity[];
 }
 
 @Entity({ name: 'post' })
@@ -52,4 +55,8 @@ export class PostEntity
     @OneToMany(() => PostStatEntity, (postStat) => postStat.post)
     @JoinColumn()
     postStats: PostStatEntity[];
+
+    @OneToMany(() => CommentEntity, (comment) => comment.post)
+    @JoinColumn()
+    comments: CommentEntity[];
 }
