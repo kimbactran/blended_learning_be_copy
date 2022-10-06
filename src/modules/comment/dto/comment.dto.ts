@@ -1,6 +1,4 @@
 import { AbstractDto } from '@common/dto/abstract.dto';
-import { PostDto } from '@modules/post/dto/post.dto';
-import { UserDto } from '@modules/user/dtos/user.dto';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 import type { CommentEntity } from '../entities/comment.entity';
@@ -19,10 +17,10 @@ export class CommentDto extends AbstractDto {
     parentId: Uuid;
 
     @ApiPropertyOptional()
-    user: UserDto;
+    userId: Uuid;
 
     @ApiPropertyOptional()
-    post: PostDto;
+    postId: Uuid;
 
     @ApiPropertyOptional()
     isDelete?: boolean;
@@ -33,7 +31,7 @@ export class CommentDto extends AbstractDto {
         this.content = comment.content;
         this.parentId = comment.parentId;
         this.isDelete = options?.isActive;
-        this.user = comment.user?.toDto({ excludeFields: true });
-        this.post = comment.post?.toDto({ excludeFields: true });
+        this.userId = comment.user.id;
+        this.postId = comment.post.id;
     }
 }
