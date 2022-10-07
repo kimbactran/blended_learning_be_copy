@@ -1,7 +1,7 @@
-import { StringFieldOptional } from '@decorators/index';
+import { StringField, StringFieldOptional } from '@decorators/index';
 
 export class CreateClassroomDto {
-    @StringFieldOptional()
+    @StringField()
     title: string;
 
     @StringFieldOptional()
