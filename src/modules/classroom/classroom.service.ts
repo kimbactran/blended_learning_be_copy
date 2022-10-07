@@ -1,9 +1,9 @@
-import type { StatusClassroom } from '@constants/status';
 import { UserNotFoundException } from '@exceptions/user-not-found.exception';
 import type { UserEntity } from '@modules/user/user.entity';
 import { UserRepository } from '@modules/user/user.repository';
 import { UserService } from '@modules/user/user.service';
 import { Injectable, NotFoundException } from '@nestjs/common';
+import type { DeleteDto } from 'shared/dto/delete-dto';
 import { Transactional } from 'typeorm-transactional-cls-hooked';
 
 import { ClassroomRepository } from './classroom.repository';
@@ -12,6 +12,8 @@ import { CreateClassroomDto } from './dto/create-classroom.dto';
 import type { GetClassroomsDto } from './dto/get-classroom.dto';
 import type { JoinStudentsDto } from './dto/join-students.dto';
 import type { JoinTeacherDto } from './dto/join-teacher.dto';
+import type { UpdateClassroomDto } from './dto/update-classroom.dto';
+import type { UpdateStatusClassroom } from './dto/update-status-classroom.dto';
 import type { ClassroomEntity } from './entities/classroom.entity';
 
 @Injectable()
@@ -153,7 +155,7 @@ export class ClassroomService {
 
     async updateStatus(
         classroomId: string,
-        body: { status: StatusClassroom },
+        updateStatusClassroom: UpdateStatusClassroom,
     ): Promise<ClassroomEntity> {
         const classroom = await this.classroomRepository
             .createQueryBuilder('classroom')
@@ -164,10 +166,48 @@ export class ClassroomService {
             throw new NotFoundException('Classroom not found!');
         }
 
-        classroom.status = body.status;
-
+        classroom.status = updateStatusClassroom.status;
         await this.classroomRepository.save(classroom);
 
         return classroom;
+    }
+
+    async updateClassroom(
+        id: string,
+        updateClassroomDto: UpdateClassroomDto,
+    ): Promise<ClassroomEntity> {
+        const classroom = await this.classroomRepository
+            .createQueryBuilder('classroom')
+            .where('classroom.id = :id', { id })
+            .getOne();
+
+        if (!classroom) {
+            throw new NotFoundException('Classroom not found!');
+        }
+
+        const updateClassroom = this.classroomRepository.merge(
+            classroom,
+            updateClassroomDto,
+        );
+        await this.classroomRepository.save(updateClassroom);
+
+        return updateClassroom;
+    }
+
+    // DELETE
+
+    async deleteClassroom(id: string): Promise<DeleteDto> {
+        const classroom = await this.classroomRepository
+            .createQueryBuilder('classroom')
+            .where('classroom.id = :id', { id })
+            .getOne();
+
+        if (!classroom) {
+            throw new NotFoundException('Classroom not found!');
+        }
+
+        await this.classroomRepository.remove(classroom);
+
+        return { success: true };
     }
 }
