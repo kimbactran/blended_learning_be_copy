@@ -7,6 +7,7 @@ import { CommentEntity } from '@modules/comment/entities/comment.entity';
 import { CommentStatEntity } from '@modules/comment/entities/comment-stat.entity';
 import { PostEntity } from '@modules/post/entities/post.entity';
 import { PostStatEntity } from '@modules/post/entities/post-stat.entity';
+import { TagEntity } from '@modules/tag/entities/tag.entity';
 import {
     Column,
     Entity,
@@ -40,6 +41,8 @@ export interface IUserEntity extends IAbstractEntity<UserDto> {
     comments?: CommentEntity[];
 
     commentStats?: CommentStatEntity[];
+
+    tags?: TagEntity[];
 }
 
 @Entity({ name: 'user' })
@@ -91,4 +94,8 @@ export class UserEntity
     @OneToMany(() => CommentStatEntity, (commentStat) => commentStat.user)
     @JoinColumn()
     commentStats: CommentStatEntity[];
+
+    @OneToMany(() => TagEntity, (tag) => tag.user)
+    @JoinColumn()
+    tags: TagEntity[];
 }

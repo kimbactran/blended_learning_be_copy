@@ -3,6 +3,7 @@ import './boilerplate.polyfill';
 import { ClassroomModule } from '@modules/classroom/classroom.module';
 import { CommentModule } from '@modules/comment/comment.module';
 import { PostModule } from '@modules/post/post.module';
+import { TagModule } from '@modules/tag/tag.module';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER } from '@nestjs/core';
@@ -22,6 +23,7 @@ import { SharedModule } from './shared/shared.module';
         ClassroomModule,
         PostModule,
         CommentModule,
+        TagModule,
         // PostModule,
         ConfigModule.forRoot({
             isGlobal: true,
