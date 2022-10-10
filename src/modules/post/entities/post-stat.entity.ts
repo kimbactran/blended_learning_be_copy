@@ -17,9 +17,9 @@ import { PostEntity } from './post.entity';
 export interface IPostStatEntity extends IAbstractEntity<PostStatDto> {
     id: Uuid;
 
-    upVote: number;
+    isUpVote: boolean;
 
-    downVote: number;
+    isDownVote: boolean;
 
     isViewed: number;
 
@@ -37,11 +37,11 @@ export class PostStatEntity
     @PrimaryGeneratedColumn('uuid')
     id: Uuid;
 
-    @Column({ nullable: false, default: 0 })
-    upVote: number;
+    @Column({ nullable: false, default: false })
+    isUpVote: boolean;
 
-    @Column({ nullable: false, default: 0 })
-    downVote: number;
+    @Column({ nullable: false, default: false })
+    isDownVote: boolean;
 
     @Column({ nullable: false, default: 0 })
     isViewed: number;
@@ -50,6 +50,8 @@ export class PostStatEntity
     @JoinColumn()
     user: UserEntity;
 
-    @ManyToOne(() => PostEntity, (post) => post.postStats)
+    @ManyToOne(() => PostEntity, (post) => post.postStats, {
+        onDelete: 'CASCADE',
+    })
     post: PostEntity;
 }

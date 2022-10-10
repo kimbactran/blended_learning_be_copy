@@ -10,11 +10,13 @@ import { CheckExistedService } from '@sharedServices/check-existed.service';
 import { PostController } from './post.controller';
 import { PostRepository } from './post.repository';
 import { PostService } from './post.service';
+import { PostStatRepository } from './post-stat.repository';
 
 @Module({
     imports: [
         TypeOrmModule.forFeature([
             PostRepository,
+            PostStatRepository,
             UserRepository,
             UserProfileRepository,
             ClassroomRepository,

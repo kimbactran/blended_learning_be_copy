@@ -17,9 +17,9 @@ import { CommentEntity } from './comment.entity';
 export interface ICommentStatEntity extends IAbstractEntity<CommentStatDto> {
     id: Uuid;
 
-    upVote: number;
+    isUpVote: boolean;
 
-    downVote: number;
+    isDownVote: boolean;
 
     user?: UserEntity;
 
@@ -35,16 +35,18 @@ export class CommentStatEntity
     @PrimaryGeneratedColumn('uuid')
     id: Uuid;
 
-    @Column({ nullable: false, default: 0 })
-    upVote: number;
+    @Column({ nullable: false, default: false })
+    isUpVote: boolean;
 
-    @Column({ nullable: false, default: 0 })
-    downVote: number;
+    @Column({ nullable: false, default: false })
+    isDownVote: boolean;
 
     @ManyToOne(() => UserEntity, (user) => user.commentStats)
     @JoinColumn()
     user: UserEntity;
 
-    @ManyToOne(() => CommentEntity, (comment) => comment.commentStats)
+    @ManyToOne(() => CommentEntity, (comment) => comment.commentStats, {
+        onDelete: 'CASCADE',
+    })
     comment: CommentEntity;
 }

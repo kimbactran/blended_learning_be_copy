@@ -53,6 +53,8 @@ export class CommentEntity
     @ManyToOne(() => PostEntity, (post) => post.comments)
     post: PostEntity;
 
-    @OneToMany(() => CommentStatEntity, (commentStat) => commentStat.comment)
+    @OneToMany(() => CommentStatEntity, (commentStat) => commentStat.comment, {
+        onDelete: 'CASCADE',
+    })
     commentStats: CommentStatEntity[];
 }
