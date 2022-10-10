@@ -28,6 +28,8 @@ export interface IPostEntity extends IAbstractEntity<PostDto> {
 
     classroom?: ClassroomEntity;
 
+    postStats?: PostStatEntity[];
+
     comments?: CommentEntity[];
 }
 
@@ -52,7 +54,9 @@ export class PostEntity
     @ManyToOne(() => ClassroomEntity, (classroom) => classroom.posts)
     classroom: ClassroomEntity;
 
-    @OneToMany(() => PostStatEntity, (postStat) => postStat.post)
+    @OneToMany(() => PostStatEntity, (postStat) => postStat.post, {
+        onDelete: 'CASCADE',
+    })
     @JoinColumn()
     postStats: PostStatEntity[];
 

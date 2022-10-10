@@ -10,10 +10,10 @@ export type CommentStatDtoOptions = Partial<{
 
 export class CommentStatDto extends AbstractDto {
     @ApiProperty()
-    upVote: number;
+    isUpVote: boolean;
 
     @ApiProperty()
-    downVote: number;
+    isDownVote: boolean;
 
     @ApiPropertyOptional()
     userId: string;
@@ -24,8 +24,8 @@ export class CommentStatDto extends AbstractDto {
     constructor(postStat: CommentStatEntity, options?: CommentStatDtoOptions) {
         super(postStat, options);
 
-        this.upVote = postStat.upVote;
-        this.downVote = postStat.downVote;
+        this.isUpVote = postStat.isUpVote;
+        this.isDownVote = postStat.isDownVote;
         this.userId = postStat.user.id;
         this.commentId = postStat.comment.id;
     }

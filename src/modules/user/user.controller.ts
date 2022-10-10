@@ -66,14 +66,14 @@ export class UserController {
         return this.userService.updateUserProfile(user.id, updateProfile);
     }
 
-    @Get('classroom/:classroomId')
+    @Get('users-by-classroom/:classroomId')
     @Auth([RoleType.ADMIN, RoleType.TEACHER, RoleType.STUDENT])
     @HttpCode(HttpStatus.OK)
     @ApiPageOkResponse({
-        description: 'Get user list',
-        type: UserDto,
+        description: 'Get users by classroom',
+        type: UserEntity,
     })
-    getClassroomsByUserId(@Param('classroomId') classroomId: string) {
+    getUsersByClassroomId(@Param('classroomId') classroomId: string) {
         return this.userService.getUsersByClassroomId(classroomId);
     }
 
