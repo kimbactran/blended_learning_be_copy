@@ -1,5 +1,6 @@
 import { AbstractDto } from '@common/dto/abstract.dto';
 import { ClassroomDto } from '@modules/classroom/dto/classroom.dto';
+import type { TagDto } from '@modules/tag/dto/tag.dto';
 import { UserDto } from '@modules/user/dtos/user.dto';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
@@ -25,6 +26,9 @@ export class PostDto extends AbstractDto {
     classroom: ClassroomDto;
 
     @ApiPropertyOptional()
+    tags: TagDto[];
+
+    @ApiPropertyOptional()
     isDelete?: boolean;
 
     constructor(post: PostEntity, options?: PostDtoOptions) {
@@ -35,5 +39,6 @@ export class PostDto extends AbstractDto {
         this.isDelete = options?.isActive;
         this.user = post.user?.toDto({ excludeFields: true });
         this.classroom = post.classroom?.toDto({ excludeFields: true });
+        this.tags = post.tags?.toDtos({ excludeFields: true });
     }
 }

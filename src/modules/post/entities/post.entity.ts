@@ -3,11 +3,14 @@ import { AbstractEntity } from '@common/abstract.entity';
 import { UseDto } from '@decorators/index';
 import { ClassroomEntity } from '@modules/classroom/entities/classroom.entity';
 import { CommentEntity } from '@modules/comment/entities/comment.entity';
+import { TagEntity } from '@modules/tag/entities/tag.entity';
 import { UserEntity } from '@modules/user/user.entity';
 import {
     Column,
     Entity,
     JoinColumn,
+    JoinTable,
+    ManyToMany,
     ManyToOne,
     OneToMany,
     PrimaryGeneratedColumn,
@@ -31,6 +34,8 @@ export interface IPostEntity extends IAbstractEntity<PostDto> {
     postStats?: PostStatEntity[];
 
     comments?: CommentEntity[];
+
+    tags?: TagEntity[];
 }
 
 @Entity({ name: 'post' })
@@ -63,4 +68,18 @@ export class PostEntity
     @OneToMany(() => CommentEntity, (comment) => comment.post)
     @JoinColumn()
     comments: CommentEntity[];
+
+    @ManyToMany(() => TagEntity, (tag) => tag.posts)
+    @JoinTable({
+        name: 'post_tag',
+        joinColumn: {
+            name: 'post_id',
+            referencedColumnName: 'id',
+        },
+        inverseJoinColumn: {
+            name: 'tag_id',
+            referencedColumnName: 'id',
+        },
+    })
+    tags: TagEntity[];
 }

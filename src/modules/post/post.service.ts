@@ -76,7 +76,7 @@ export class PostService {
         return posts;
     }
 
-    async getPostById(postId: string): Promise<PostDto> {
+    async getPostById(postId: string): Promise<PostEntity> {
         const queryBuilder = this.postRepository
             .createQueryBuilder('post')
             .where('post.id = :postId', { postId });
