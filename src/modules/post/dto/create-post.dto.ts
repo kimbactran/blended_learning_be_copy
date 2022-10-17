@@ -12,9 +12,5 @@ export class CreatePostDto {
 
     @ApiProperty()
     @IsString()
-    userId: string;
-
-    @ApiProperty()
-    @IsString()
     classroomId: string;
 }

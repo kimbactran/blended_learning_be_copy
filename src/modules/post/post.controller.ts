@@ -12,6 +12,7 @@ import {
     Param,
     Post,
     Put,
+    Query,
 } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { DeleteDto } from 'shared/dto/delete-dto';
@@ -37,8 +38,14 @@ export class PostController {
         description: 'create post',
         type: PostDto,
     })
-    createPost(@Body() createPostDto: CreatePostDto) {
-        return this.postService.createPost(createPostDto);
+    createPost(
+        @AuthUser() user: UserEntity,
+        @Body() createPostDto: CreatePostDto,
+    ) {
+        return this.postService.createPost({
+            userId: user.id,
+            createPostDto,
+        });
     }
 
     // GET
@@ -75,8 +82,14 @@ export class PostController {
         description: 'Get posts by classroom id',
         type: PostDto,
     })
-    getPostsByClassroomId(@Param('classroomId') classroomId: string) {
-        return this.postService.getPostsByClassroomId(classroomId);
+    getPostsByClassroomId(
+        @Param('classroomId') classroomId: string,
+        @Query('keySearch') keySearch?: string,
+    ) {
+        return this.postService.getPostsByClassroomId(
+            classroomId,
+            keySearch || '',
+        );
     }
 
     // UPDATE

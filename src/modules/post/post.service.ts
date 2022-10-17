@@ -6,7 +6,7 @@ import { CheckExistedService } from '@sharedServices/check-existed.service';
 import type { DeleteDto } from 'shared/dto/delete-dto';
 import { Transactional } from 'typeorm-transactional-cls-hooked';
 
-import { CreatePostDto } from './dto/create-post.dto';
+import type { CreatePostDto } from './dto/create-post.dto';
 import type { GetPostDto } from './dto/get-post.dto';
 import type { PostDto } from './dto/post.dto';
 import type { UpdatePostDto } from './dto/update-post.dto';
@@ -28,8 +28,12 @@ export class PostService {
     // POST
 
     @Transactional()
-    async createPost(createPostDto: CreatePostDto): Promise<PostDto> {
-        const { title, content, userId, classroomId } = createPostDto;
+    async createPost(body: {
+        userId: string;
+        createPostDto: CreatePostDto;
+    }): Promise<PostDto> {
+        const { userId, createPostDto } = body;
+        const { title, content, classroomId } = createPostDto;
 
         const isExistedStudentInClassroom =
             await this.checkExistedService.isExistedStudentInClassroom({
@@ -76,31 +80,63 @@ export class PostService {
         return posts;
     }
 
-    async getPostById(postId: string): Promise<PostEntity> {
-        const queryBuilder = this.postRepository
+    async getPostById(postId: string) {
+        const post = await this.postRepository
             .createQueryBuilder('post')
-            .where('post.id = :postId', { postId });
-        const post = await queryBuilder.getOne();
+            .leftJoinAndSelect('post.postStats', 'stat')
+            .where('post.id = :postId', { postId })
+            .getOne();
 
         if (!post) {
             throw new NotFoundException('Post not found!');
         }
 
-        return post;
+        const numUpVote = post.postStats.filter(
+            ({ isUpVote }) => isUpVote,
+        ).length;
+        const numDownVote = post.postStats.filter(
+            ({ isDownVote }) => isDownVote,
+        ).length;
+
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { postStats, ...tempPost } = post;
+
+        return { ...tempPost, numUpVote, numDownVote };
     }
 
-    async getPostsByClassroomId(classroomId: string): Promise<PostEntity[]> {
-        const posts = await this.postRepository
+    async getPostsByClassroomId(classroomId: string, keySearch: string) {
+        const query = this.postRepository
             .createQueryBuilder('post')
+            .leftJoinAndSelect('post.postStats', 'stat')
             .leftJoin('post.classroom', 'classroom')
-            .where('classroom.id = :classroomId', { classroomId })
-            .getMany();
+            .where('classroom.id = :classroomId', { classroomId });
+
+        if (keySearch) {
+            query.andWhere('LOWER(post.title) LIKE LOWER(:keySearch)', {
+                keySearch: `%${keySearch}%`,
+            });
+        }
+
+        const posts = await query.getMany();
 
         if (!posts) {
             throw new NotFoundException('Posts not found!');
         }
 
-        return posts;
+        const newPosts = posts.map((post) => {
+            const { postStats, ...tempPost } = post;
+
+            const numUpVote = postStats.filter(
+                ({ isUpVote }) => isUpVote,
+            ).length;
+            const numDownVote = postStats.filter(
+                ({ isDownVote }) => isDownVote,
+            ).length;
+
+            return { ...tempPost, numUpVote, numDownVote };
+        });
+
+        return newPosts;
     }
 
     // UPDATE
