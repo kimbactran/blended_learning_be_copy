@@ -13,6 +13,9 @@ export type UserDtoOptions = Partial<{
 
 export class UserDto extends AbstractDto {
     @ApiProperty()
+    id: string;
+
+    @ApiProperty()
     email: string;
 
     @ApiPropertyOptional()
@@ -27,6 +30,7 @@ export class UserDto extends AbstractDto {
     constructor(user: UserEntity, options?: UserDtoOptions) {
         super(user, options);
 
+        this.id = user.id;
         this.role = user.role;
         this.email = user.email;
         this.isActive = options?.isActive;

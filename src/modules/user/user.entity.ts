@@ -34,6 +34,8 @@ export interface IUserEntity extends IAbstractEntity<UserDto> {
 
     profile?: UserProfileEntity;
 
+    classrooms: ClassroomEntity[];
+
     posts?: PostEntity[];
 
     postStats?: PostStatEntity[];

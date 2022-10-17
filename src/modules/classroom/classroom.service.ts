@@ -1,5 +1,4 @@
 import { UserNotFoundException } from '@exceptions/user-not-found.exception';
-import type { UserEntity } from '@modules/user/user.entity';
 import { UserRepository } from '@modules/user/user.repository';
 import { UserService } from '@modules/user/user.service';
 import { Injectable, NotFoundException } from '@nestjs/common';
@@ -137,18 +136,18 @@ export class ClassroomService {
         return classroom;
     }
 
-    async getClassroomsByUserId(userId: string): Promise<UserEntity[]> {
+    async getClassroomsByUserId(userId: string): Promise<ClassroomEntity[]> {
         const userClassrooms = await this.userRepository
             .createQueryBuilder('user')
             .leftJoinAndSelect('user.classrooms', 'classroom')
             .where('user.id = :userId', { userId })
-            .getMany();
+            .getOne();
 
         if (!userClassrooms) {
             throw new UserNotFoundException();
         }
 
-        return userClassrooms;
+        return userClassrooms.classrooms;
     }
 
     // UPDATE
