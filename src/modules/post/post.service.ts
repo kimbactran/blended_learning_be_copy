@@ -107,14 +107,18 @@ export class PostService {
     async getPostsByClassroomId(classroomId: string, keySearch: string) {
         const query = this.postRepository
             .createQueryBuilder('post')
+            .leftJoinAndSelect('post.user', 'user')
             .leftJoinAndSelect('post.postStats', 'stat')
             .leftJoin('post.classroom', 'classroom')
             .where('classroom.id = :classroomId', { classroomId });
 
         if (keySearch) {
-            query.andWhere('LOWER(post.title) LIKE LOWER(:keySearch)', {
-                keySearch: `%${keySearch}%`,
-            });
+            query.andWhere(
+                'LOWER(post.title) LIKE LOWER(:keySearch) OR LOWER(post.content) LIKE LOWER(:keySearch)',
+                {
+                    keySearch: `%${keySearch}%`,
+                },
+            );
         }
 
         const posts = await query.getMany();

@@ -8,6 +8,7 @@ import { CommentStatEntity } from '@modules/comment/entities/comment-stat.entity
 import { PostEntity } from '@modules/post/entities/post.entity';
 import { PostStatEntity } from '@modules/post/entities/post-stat.entity';
 import { TagEntity } from '@modules/tag/entities/tag.entity';
+import { Exclude } from 'class-transformer';
 import {
     Column,
     Entity,
@@ -63,6 +64,7 @@ export class UserEntity
     email: string;
 
     @Column({ nullable: true })
+    @Exclude()
     password?: string;
 
     @OneToOne(() => UserProfileEntity, (userProfile) => userProfile.user)
