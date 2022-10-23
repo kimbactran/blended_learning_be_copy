@@ -44,9 +44,6 @@ export class CommentEntity
     @Column({ nullable: true })
     parentId: Uuid;
 
-    @Column({ nullable: false, default: false })
-    isDelete: boolean;
-
     @ManyToOne(() => UserEntity, (user) => user.comments)
     user: UserEntity;
 

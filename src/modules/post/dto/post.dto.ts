@@ -28,15 +28,11 @@ export class PostDto extends AbstractDto {
     @ApiPropertyOptional()
     tags: TagDto[];
 
-    @ApiPropertyOptional()
-    isDelete?: boolean;
-
     constructor(post: PostEntity, options?: PostDtoOptions) {
         super(post, options);
 
         this.title = post.title;
         this.content = post.content;
-        this.isDelete = options?.isActive;
         this.user = post.user?.toDto({ excludeFields: true });
         this.classroom = post.classroom?.toDto({ excludeFields: true });
         this.tags = post.tags?.toDtos({ excludeFields: true });

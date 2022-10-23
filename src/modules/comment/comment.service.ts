@@ -47,9 +47,11 @@ export class CommentService {
         return comment;
     }
 
-    async getCommentsByPostId(postId: string): Promise<CommentEntity[]> {
+    async getCommentsByPostId(postId: string) {
         const comments = await this.commentRepository
             .createQueryBuilder('comment')
+            .leftJoinAndSelect('comment.user', 'user')
+            .leftJoinAndSelect('comment.commentStats', 'stat')
             .where('comment.post_id = :postId', { postId })
             .getMany();
 
@@ -57,7 +59,20 @@ export class CommentService {
             throw new NotFoundException('Comments not found!');
         }
 
-        return comments;
+        const newComments = comments.map((post) => {
+            const { commentStats, ...tempComment } = post;
+
+            const numUpVote = commentStats.filter(
+                ({ isUpVote }) => isUpVote,
+            ).length;
+            const numDownVote = commentStats.filter(
+                ({ isDownVote }) => isDownVote,
+            ).length;
+
+            return { ...tempComment, numUpVote, numDownVote };
+        });
+
+        return newComments;
     }
 
     async getCommentById(commentId: string): Promise<CommentEntity> {

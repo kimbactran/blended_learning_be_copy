@@ -22,15 +22,11 @@ export class CommentDto extends AbstractDto {
     @ApiPropertyOptional()
     postId: Uuid;
 
-    @ApiPropertyOptional()
-    isDelete?: boolean;
-
     constructor(comment: CommentEntity, options?: CommentDtoOptions) {
         super(comment, options);
 
         this.content = comment.content;
         this.parentId = comment.parentId;
-        this.isDelete = options?.isActive;
         this.userId = comment.user.id;
         this.postId = comment.post.id;
     }
