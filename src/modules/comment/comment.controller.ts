@@ -21,6 +21,7 @@ import { DeleteDto } from 'shared/dto/delete-dto';
 import { CommentService } from './comment.service';
 import { CommentDto } from './dto/comment.dto';
 import { CreateCommentDto } from './dto/create-comment.dto';
+import { GetCommentsByPostDto } from './dto/get-comments.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 import { CommentEntity } from './entities/comment.entity';
 
@@ -59,8 +60,14 @@ export class CommentController {
         description: 'Get comment by post_id',
         type: CommentEntity,
     })
-    getCommentsByPostId(@Query('postId') postId: string) {
-        return this.commentService.getCommentsByPostId(postId);
+    getCommentsByPostId(
+        @AuthUser() user: UserEntity,
+        @Query() getCommentsByPostDto: GetCommentsByPostDto,
+    ) {
+        return this.commentService.getCommentsByPostId(
+            user,
+            getCommentsByPostDto,
+        );
     }
 
     @Get(':id')

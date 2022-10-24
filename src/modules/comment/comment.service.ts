@@ -1,12 +1,16 @@
+import { Order } from '@constants/index';
 import type { VoteDto } from '@modules/post/dto/vote.dto';
 import { PostService } from '@modules/post/post.service';
+import type { UserEntity } from '@modules/user/user.entity';
 import { UserService } from '@modules/user/user.service';
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { sortBy } from 'lodash';
 import type { DeleteDto } from 'shared/dto/delete-dto';
 
 import { CommentRepository } from './comment.repository';
 import { CommentStatRepository } from './comment-stat.repository';
 import type { CreateCommentDto } from './dto/create-comment.dto';
+import type { GetCommentsByPostDto } from './dto/get-comments.dto';
 import type { UpdateCommentDto } from './dto/update-comment.dto';
 import type { CommentEntity } from './entities/comment.entity';
 
@@ -47,13 +51,24 @@ export class CommentService {
         return comment;
     }
 
-    async getCommentsByPostId(postId: string) {
-        const comments = await this.commentRepository
+    async getCommentsByPostId(
+        user: UserEntity,
+        getCommentsByPostDto: GetCommentsByPostDto,
+    ) {
+        const { postId, order } = getCommentsByPostDto;
+
+        const query = this.commentRepository
             .createQueryBuilder('comment')
             .leftJoinAndSelect('comment.user', 'user')
             .leftJoinAndSelect('comment.commentStats', 'stat')
-            .where('comment.post_id = :postId', { postId })
-            .getMany();
+            .leftJoinAndSelect('stat.user', 'stat_user')
+            .where('comment.post_id = :postId', { postId });
+
+        if (order && order !== Order.HIGH_SCORES) {
+            query.orderBy('comment.updated_at', order);
+        }
+
+        const comments = await query.getMany();
 
         if (!comments) {
             throw new NotFoundException('Comments not found!');
@@ -62,6 +77,10 @@ export class CommentService {
         const newComments = comments.map((post) => {
             const { commentStats, ...tempComment } = post;
 
+            const findCommentStat = commentStats.find(
+                (item) => user.id === item.user.id,
+            );
+
             const numUpVote = commentStats.filter(
                 ({ isUpVote }) => isUpVote,
             ).length;
@@ -69,8 +88,22 @@ export class CommentService {
                 ({ isDownVote }) => isDownVote,
             ).length;
 
-            return { ...tempComment, numUpVote, numDownVote };
+            return {
+                ...tempComment,
+                numUpVote,
+                numDownVote,
+                isUpVote: findCommentStat?.isUpVote || false,
+                isDownVote: findCommentStat?.isDownVote || false,
+            };
         });
+
+        if (order === Order.HIGH_SCORES) {
+            return sortBy(
+                newComments,
+                (comment) =>
+                    -Number(comment.numUpVote) || Number(comment.numDownVote),
+            );
+        }
 
         return newComments;
     }

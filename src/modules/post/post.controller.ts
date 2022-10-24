@@ -18,7 +18,7 @@ import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { DeleteDto } from 'shared/dto/delete-dto';
 
 import { CreatePostDto } from './dto/create-post.dto';
-import { GetPostDto } from './dto/get-post.dto';
+import { GetPostDto, GetPostsByClassroomDto } from './dto/get-post.dto';
 import { PostDto } from './dto/post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { VoteDto } from './dto/vote.dto';
@@ -85,12 +85,12 @@ export class PostController {
     getPostsByClassroomId(
         @AuthUser() user: UserEntity,
         @Param('classroomId') classroomId: string,
-        @Query('keySearch') keySearch?: string,
+        @Query() getPostsByClassroomDto: GetPostsByClassroomDto,
     ) {
         return this.postService.getPostsByClassroomId(
             user,
             classroomId,
-            keySearch || '',
+            getPostsByClassroomDto,
         );
     }
 

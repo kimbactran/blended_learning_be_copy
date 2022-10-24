@@ -1,14 +1,16 @@
+import { Order } from '@constants/index';
 import { UnjoinedToClassroomException } from '@exceptions/unjoined-classroom.exception';
 import { ClassroomService } from '@modules/classroom/classroom.service';
 import type { UserEntity } from '@modules/user/user.entity';
 import { UserService } from '@modules/user/user.service';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CheckExistedService } from '@sharedServices/check-existed.service';
+import { orderBy } from 'lodash';
 import type { DeleteDto } from 'shared/dto/delete-dto';
 import { Transactional } from 'typeorm-transactional-cls-hooked';
 
 import type { CreatePostDto } from './dto/create-post.dto';
-import type { GetPostDto } from './dto/get-post.dto';
+import type { GetPostDto, GetPostsByClassroomDto } from './dto/get-post.dto';
 import type { PostDto } from './dto/post.dto';
 import type { UpdatePostDto } from './dto/update-post.dto';
 import type { VoteDto } from './dto/vote.dto';
@@ -108,8 +110,10 @@ export class PostService {
     async getPostsByClassroomId(
         user: UserEntity,
         classroomId: string,
-        keySearch: string,
+        getPostsByClassroomDto: GetPostsByClassroomDto,
     ) {
+        const { order, keySearch } = getPostsByClassroomDto;
+
         const query = this.postRepository
             .createQueryBuilder('post')
             .leftJoinAndSelect('post.user', 'user')
@@ -125,6 +129,10 @@ export class PostService {
                     keySearch: `%${keySearch}%`,
                 },
             );
+        }
+
+        if (order && order !== Order.HIGH_SCORES) {
+            query.orderBy('post.updated_at', order);
         }
 
         const posts = await query.getMany();
@@ -155,6 +163,13 @@ export class PostService {
                 isDownVote: findPostStat?.isDownVote || false,
             };
         });
+
+        if (order === Order.HIGH_SCORES) {
+            return orderBy(
+                newPosts,
+                (post) => -Number(post.numUpVote) || Number(post.numDownVote),
+            );
+        }
 
         return newPosts;
     }
