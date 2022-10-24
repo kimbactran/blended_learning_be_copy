@@ -1,5 +1,6 @@
 import { UnjoinedToClassroomException } from '@exceptions/unjoined-classroom.exception';
 import { ClassroomService } from '@modules/classroom/classroom.service';
+import type { UserEntity } from '@modules/user/user.entity';
 import { UserService } from '@modules/user/user.service';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CheckExistedService } from '@sharedServices/check-existed.service';
@@ -104,11 +105,16 @@ export class PostService {
         return { ...tempPost, numUpVote, numDownVote };
     }
 
-    async getPostsByClassroomId(classroomId: string, keySearch: string) {
+    async getPostsByClassroomId(
+        user: UserEntity,
+        classroomId: string,
+        keySearch: string,
+    ) {
         const query = this.postRepository
             .createQueryBuilder('post')
             .leftJoinAndSelect('post.user', 'user')
             .leftJoinAndSelect('post.postStats', 'stat')
+            .leftJoinAndSelect('stat.user', 'stat_user')
             .leftJoin('post.classroom', 'classroom')
             .where('classroom.id = :classroomId', { classroomId });
 
@@ -130,6 +136,10 @@ export class PostService {
         const newPosts = posts.map((post) => {
             const { postStats, ...tempPost } = post;
 
+            const findPostStat = postStats.find(
+                (item) => user.id === item.user.id,
+            );
+
             const numUpVote = postStats.filter(
                 ({ isUpVote }) => isUpVote,
             ).length;
@@ -137,7 +147,13 @@ export class PostService {
                 ({ isDownVote }) => isDownVote,
             ).length;
 
-            return { ...tempPost, numUpVote, numDownVote };
+            return {
+                ...tempPost,
+                numUpVote,
+                numDownVote,
+                isUpVote: findPostStat?.isUpVote || false,
+                isDownVote: findPostStat?.isDownVote || false,
+            };
         });
 
         return newPosts;

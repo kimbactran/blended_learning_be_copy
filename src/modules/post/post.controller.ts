@@ -83,10 +83,12 @@ export class PostController {
         type: PostDto,
     })
     getPostsByClassroomId(
+        @AuthUser() user: UserEntity,
         @Param('classroomId') classroomId: string,
         @Query('keySearch') keySearch?: string,
     ) {
         return this.postService.getPostsByClassroomId(
+            user,
             classroomId,
             keySearch || '',
         );
