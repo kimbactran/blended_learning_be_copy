@@ -1,5 +1,6 @@
 import type { IAbstractEntity } from '@common/abstract.entity';
 import { AbstractEntity } from '@common/abstract.entity';
+import { TagType } from '@constants/tag-type';
 import { UseDto } from '@decorators/index';
 import { PostEntity } from '@modules/post/entities/post.entity';
 import { UserEntity } from '@modules/user/user.entity';
@@ -20,6 +21,10 @@ export interface ITagEntity extends IAbstractEntity<TagDto> {
 
     tag: string;
 
+    parentId?: string;
+
+    type: TagType;
+
     user?: UserEntity;
 
     posts?: PostEntity[];
@@ -36,6 +41,12 @@ export class TagEntity
 
     @Column({ unique: true, nullable: false })
     tag: string;
+
+    @Column({ nullable: true })
+    parentId: string;
+
+    @Column({ nullable: false, default: TagType.FREE })
+    type: TagType;
 
     @ManyToOne(() => UserEntity, (user) => user.tags)
     user: UserEntity;
