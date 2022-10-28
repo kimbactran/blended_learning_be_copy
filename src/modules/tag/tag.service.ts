@@ -1,9 +1,11 @@
 import type { PostEntity } from '@modules/post/entities/post.entity';
 import { PostRepository } from '@modules/post/post.repository';
 import { PostService } from '@modules/post/post.service';
+import type { UserEntity } from '@modules/user/user.entity';
 import { UserService } from '@modules/user/user.service';
 import { Injectable, NotFoundException } from '@nestjs/common';
 
+import type { CreateTagDto } from './dto/create-tag.dto';
 import type { JoinTagsToPost } from './dto/tags-to-post.dto';
 import type { TagEntity } from './entities/tag.entity';
 import { TagRepository } from './tag.repository';
@@ -19,10 +21,12 @@ export class TagService {
 
     // POST
 
-    async createTag(body: { userId: string; tag: string }): Promise<TagEntity> {
-        const { userId, tag } = body;
-
-        const user = await this.userService.getUserById(userId);
+    async createTag(body: {
+        user: UserEntity;
+        createTagDto: CreateTagDto;
+    }): Promise<TagEntity> {
+        const { user, createTagDto } = body;
+        const { tag, parentId, type, postId } = createTagDto;
 
         if (!user) {
             throw new NotFoundException('Error when get user');
@@ -31,8 +35,14 @@ export class TagService {
         const tagEntity = this.tagRepository.create({
             user,
             tag,
+            parentId,
+            type,
         });
         await this.tagRepository.save(tagEntity);
+
+        if (postId) {
+            await this.joinTagsToPost({ tagIds: [tagEntity.id], postId });
+        }
 
         return tagEntity;
     }
@@ -55,6 +65,8 @@ export class TagService {
         }
 
         post.tags.push(...tags);
+
+        await this.postRepository.save(post);
 
         return post;
     }

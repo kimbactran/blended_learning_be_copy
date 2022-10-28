@@ -30,8 +30,8 @@ export class TagController {
         @Body() createTagDto: CreateTagDto,
     ) {
         return this.tagService.createTag({
-            userId: user.id,
-            tag: createTagDto.tag,
+            user,
+            createTagDto,
         });
     }
 
