@@ -3,6 +3,7 @@ import { AbstractEntity } from '@common/abstract.entity';
 import { StatusClassroom } from '@constants/status';
 import { UseDto } from '@decorators/index';
 import { PostEntity } from '@modules/post/entities/post.entity';
+import { TagEntity } from '@modules/tag/entities/tag.entity';
 import { UserEntity } from '@modules/user/user.entity';
 import {
     Column,
@@ -29,6 +30,8 @@ export interface IClassroomEntity extends IAbstractEntity<ClassroomDto> {
     users?: UserEntity[];
 
     posts?: PostEntity[];
+
+    tags?: TagEntity[];
 }
 
 @Entity({ name: 'classroom' })
@@ -66,4 +69,8 @@ export class ClassroomEntity
     @OneToMany(() => PostEntity, (post) => post.user)
     @JoinColumn()
     posts: PostEntity[];
+
+    @OneToMany(() => TagEntity, (tag) => tag.classroom)
+    @JoinColumn()
+    tags: TagEntity[];
 }
