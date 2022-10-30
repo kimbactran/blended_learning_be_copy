@@ -113,6 +113,24 @@ export class TagService {
 
     // GET
 
+    async getTags(keySearch?: string) {
+        const query = this.tagRepository.createQueryBuilder('tag');
+
+        if (keySearch) {
+            query.andWhere('LOWER(tag.tag) LIKE LOWER(:keySearch)', {
+                keySearch: `%${keySearch}%`,
+            });
+        }
+
+        const tags = await query.getMany();
+
+        if (!tags) {
+            throw new NotFoundException('Error when get tags');
+        }
+
+        return tags;
+    }
+
     async getSyllabusTagsByClassroom(classroomId: string) {
         const syllabusTags = await this.tagRepository
             .createQueryBuilder('tag')

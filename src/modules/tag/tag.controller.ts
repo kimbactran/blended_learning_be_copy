@@ -11,6 +11,7 @@ import {
     HttpStatus,
     Param,
     Post,
+    Query,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
@@ -80,6 +81,17 @@ export class TagController {
     })
     getSyllabusTagsByClassroom(@Param('classroomId') classroomId: string) {
         return this.tagService.getSyllabusTagsByClassroom(classroomId);
+    }
+
+    @Get()
+    @Auth([RoleType.TEACHER, RoleType.ADMIN, RoleType.STUDENT])
+    @HttpCode(HttpStatus.OK)
+    @ApiPageOkResponse({
+        description: 'get tags',
+        type: TagDto,
+    })
+    getTags(@Query('keySearch') keySearch?: string) {
+        return this.tagService.getTags(keySearch);
     }
 
     // UPDATE

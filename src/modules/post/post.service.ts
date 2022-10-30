@@ -117,6 +117,7 @@ export class PostService {
         const query = this.postRepository
             .createQueryBuilder('post')
             .leftJoinAndSelect('post.user', 'user')
+            .leftJoinAndSelect('post.tags', 'tag')
             .leftJoinAndSelect('post.postStats', 'stat')
             .leftJoinAndSelect('stat.user', 'stat_user')
             .leftJoin('post.classroom', 'classroom')
