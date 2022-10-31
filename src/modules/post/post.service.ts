@@ -7,7 +7,7 @@ import type { UserEntity } from '@modules/user/user.entity';
 import { UserService } from '@modules/user/user.service';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CheckExistedService } from '@sharedServices/check-existed.service';
-import { orderBy } from 'lodash';
+import { differenceWith, isEqual, orderBy } from 'lodash';
 import type { DeleteDto } from 'shared/dto/delete-dto';
 import { Transactional } from 'typeorm-transactional-cls-hooked';
 
@@ -202,6 +202,7 @@ export class PostService {
         const { userId, postId, updatePostDto } = body;
         const post = await this.postRepository
             .createQueryBuilder('post')
+            .leftJoinAndSelect('post.tags', 'tag')
             .where('post.id = :postId', { postId })
             .andWhere('post.user_id = :userId', { userId })
             .getOne();
@@ -210,7 +211,34 @@ export class PostService {
             throw new NotFoundException('Post not found!');
         }
 
-        const updatedPost = this.postRepository.merge(post, updatePostDto);
+        const tags = [] as TagEntity[];
+
+        if (updatePostDto.tagIds?.length) {
+            const tempTags = await this.tagRepository
+                .createQueryBuilder('tag')
+                .where('tag.id IN (:...tagIds)', {
+                    tagIds: updatePostDto.tagIds,
+                })
+                .getMany();
+
+            if (!tempTags) {
+                throw new NotFoundException('tags not found!');
+            }
+
+            tags.push(...tempTags);
+        }
+
+        const isUpdatedTags =
+            differenceWith(tags, post.tags, isEqual).length > 0 ||
+            differenceWith(post.tags, tags, isEqual).length > 0;
+
+        const newPost = {
+            ...post,
+            tags: isUpdatedTags ? tags : post.tags,
+        } as PostEntity;
+
+        const updatedPost = this.postRepository.merge(newPost, updatePostDto);
+
         await this.postRepository.save(updatedPost);
 
         return updatedPost;
