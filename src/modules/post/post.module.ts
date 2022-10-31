@@ -1,5 +1,6 @@
 import { ClassroomRepository } from '@modules/classroom/classroom.repository';
 import { ClassroomService } from '@modules/classroom/classroom.service';
+import { TagRepository } from '@modules/tag/tag.repository';
 import { UserRepository } from '@modules/user/user.repository';
 import { UserService } from '@modules/user/user.service';
 import { UserProfileRepository } from '@modules/user/user-profile.repository';
@@ -20,6 +21,7 @@ import { PostStatRepository } from './post-stat.repository';
             UserRepository,
             UserProfileRepository,
             ClassroomRepository,
+            TagRepository,
         ]),
     ],
     controllers: [PostController],

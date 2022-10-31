@@ -55,7 +55,7 @@ export class PostController {
     @HttpCode(HttpStatus.OK)
     @ApiResponse({
         status: HttpStatus.OK,
-        description: 'Get post by id',
+        description: 'Get post',
         type: PostDto,
     })
     getPosts(@Body() getPostDto: GetPostDto) {

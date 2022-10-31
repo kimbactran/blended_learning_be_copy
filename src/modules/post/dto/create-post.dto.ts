@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
+import { IsArray, IsOptional, IsString } from 'class-validator';
 
 export class CreatePostDto {
     @ApiProperty()
@@ -13,4 +13,9 @@ export class CreatePostDto {
     @ApiProperty()
     @IsString()
     classroomId: string;
+
+    @ApiProperty()
+    @IsArray()
+    @IsOptional()
+    tagIds?: string[];
 }

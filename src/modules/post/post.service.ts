@@ -1,6 +1,8 @@
 import { Order } from '@constants/index';
 import { UnjoinedToClassroomException } from '@exceptions/unjoined-classroom.exception';
 import { ClassroomService } from '@modules/classroom/classroom.service';
+import type { TagEntity } from '@modules/tag/entities/tag.entity';
+import { TagRepository } from '@modules/tag/tag.repository';
 import type { UserEntity } from '@modules/user/user.entity';
 import { UserService } from '@modules/user/user.service';
 import { Injectable, NotFoundException } from '@nestjs/common';
@@ -26,6 +28,7 @@ export class PostService {
         private checkExistedService: CheckExistedService,
         private userService: UserService,
         private classroomService: ClassroomService,
+        private tagRepository: TagRepository,
     ) {}
 
     // POST
@@ -36,7 +39,7 @@ export class PostService {
         createPostDto: CreatePostDto;
     }): Promise<PostDto> {
         const { userId, createPostDto } = body;
-        const { title, content, classroomId } = createPostDto;
+        const { title, content, classroomId, tagIds } = createPostDto;
 
         const isExistedStudentInClassroom =
             await this.checkExistedService.isExistedStudentInClassroom({
@@ -52,12 +55,27 @@ export class PostService {
         const classroom = await this.classroomService.getByClassroomId(
             classroomId,
         );
+        const tags = [] as TagEntity[];
+
+        if (tagIds?.length) {
+            const tempTags = await this.tagRepository
+                .createQueryBuilder('tag')
+                .where('tag.id IN (:...tagIds)', { tagIds })
+                .getMany();
+
+            if (!tempTags) {
+                throw new NotFoundException('tags not found!');
+            }
+
+            tags.push(...tempTags);
+        }
 
         const post = this.postRepository.create({
             title,
             content,
             user,
             classroom,
+            tags,
         });
         await this.postRepository.save(post);
 

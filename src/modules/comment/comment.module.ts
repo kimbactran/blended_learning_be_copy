@@ -3,6 +3,7 @@ import { ClassroomService } from '@modules/classroom/classroom.service';
 import { PostRepository } from '@modules/post/post.repository';
 import { PostService } from '@modules/post/post.service';
 import { PostStatRepository } from '@modules/post/post-stat.repository';
+import { TagRepository } from '@modules/tag/tag.repository';
 import { UserRepository } from '@modules/user/user.repository';
 import { UserService } from '@modules/user/user.service';
 import { UserProfileRepository } from '@modules/user/user-profile.repository';
@@ -25,6 +26,7 @@ import { CommentStatRepository } from './comment-stat.repository';
             PostRepository,
             PostStatRepository,
             ClassroomRepository,
+            TagRepository,
         ]),
     ],
     controllers: [CommentController],
