@@ -1,5 +1,4 @@
 import type { PageDto } from '@common/dto/page.dto';
-import { Gender } from '@constants/index';
 import { UserNotFoundException } from '@exceptions/index';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
@@ -13,6 +12,7 @@ import { UserRegisterDto } from '../auth/dto/UserRegisterDto';
 import { CreateProfileCommand } from './commands/create-profile.command';
 import { CreateProfileDto } from './dtos/create-profile.dto';
 import type { SearchUserDto } from './dtos/search-user.dto';
+import type { UpdateUserDto } from './dtos/update-user-dto';
 import type { UserDto } from './dtos/user.dto';
 import type { UserProfileDto } from './dtos/user-profile.dto';
 import type { UsersPageOptionsDto } from './dtos/users-page-options.dto';
@@ -60,15 +60,16 @@ export class UserService {
 
     @Transactional()
     async createUser(userRegisterDto: UserRegisterDto): Promise<UserEntity> {
-        const user = this.userRepository.create(userRegisterDto);
+        const { email, password, name, gender } = userRegisterDto;
+        const user = this.userRepository.create({ email, password });
 
         await this.userRepository.save(user);
 
         user.profile = await this.createProfile(
             user.id,
             plainToClass(CreateProfileDto, {
-                name: '',
-                gender: Gender.MALE,
+                name,
+                gender,
             }),
         );
 
@@ -91,7 +92,7 @@ export class UserService {
 
         const queryBuilder = this.userRepository
             .createQueryBuilder('user')
-            .leftJoinAndSelect('user.profile', 'user_id');
+            .leftJoinAndSelect('user.profile', 'profile');
 
         if (email) {
             queryBuilder.orWhere('user.email like :email', {
@@ -100,7 +101,9 @@ export class UserService {
         }
 
         if (name) {
-            queryBuilder.orWhere('user.name like :name', { name: `%${name}%` });
+            queryBuilder.orWhere('profile.name like :name', {
+                name: `%${name}%`,
+            });
         }
 
         const [items, pageMetaDto] = await queryBuilder.paginate(
@@ -123,8 +126,6 @@ export class UserService {
             throw new UserNotFoundException();
         }
 
-        delete userEntity.password;
-
         return userEntity;
     }
 
@@ -142,6 +143,32 @@ export class UserService {
         }
 
         return userEntity.toDtos({ excludeFields: true });
+    }
+
+    // UPDATE
+
+    async updateUser(userId: string, updateUserDto: UpdateUserDto) {
+        const user = await this.userRepository
+            .createQueryBuilder('user')
+            .leftJoinAndSelect('user.profile', 'profile')
+            .where('user.id = :userId', { userId })
+            .getOne();
+
+        if (!user) {
+            throw new NotFoundException('Error when get user');
+        }
+
+        const updatedUser = this.userRepository.merge(user, {
+            ...updateUserDto,
+            profile: {
+                name: updateUserDto.name || user.profile.name,
+                gender: updateUserDto.gender || user.profile.gender,
+            },
+        });
+
+        await this.userRepository.save(updatedUser);
+
+        return updatedUser;
     }
 
     async updateUserProfile(
@@ -174,5 +201,22 @@ export class UserService {
             },
             success: true,
         };
+    }
+
+    // DELETE
+
+    async deleteUser(userId: string) {
+        const user = await this.userRepository
+            .createQueryBuilder('user')
+            .where('user.id = :userId', { userId })
+            .getOne();
+
+        if (!user) {
+            throw new NotFoundException('Error when get user');
+        }
+
+        await this.userRepository.remove(user);
+
+        return { success: true };
     }
 }

@@ -134,7 +134,7 @@ export class TagService {
     async getSyllabusTagsByClassroom(classroomId: string) {
         const syllabusTags = await this.tagRepository
             .createQueryBuilder('tag')
-            // .where('tag.type = SYLLABUS')
+            .where("tag.type = 'SYLLABUS'")
             .andWhere('tag.classroom_id = :classroomId', { classroomId })
             .getMany();
 

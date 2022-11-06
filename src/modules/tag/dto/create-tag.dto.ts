@@ -9,6 +9,9 @@ export class CreateTagDto {
     @StringField()
     tag: string;
 
+    @StringField()
+    classroomId: string;
+
     @StringFieldOptional()
     parentId: string;
 

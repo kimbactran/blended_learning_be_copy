@@ -4,6 +4,7 @@ import { ApiPageOkResponse, Auth, AuthUser } from '@decorators/index';
 import {
     Body,
     Controller,
+    Delete,
     Get,
     HttpCode,
     HttpStatus,
@@ -15,6 +16,7 @@ import {
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { CreateProfileDto } from './dtos/create-profile.dto';
+import { UpdateUserDto } from './dtos/update-user-dto';
 import { UserDto } from './dtos/user.dto';
 import type { UserProfileDto } from './dtos/user-profile.dto';
 import { UsersPageOptionsDto } from './dtos/users-page-options.dto';
@@ -25,6 +27,8 @@ import { UserService } from './user.service';
 @ApiTags('users')
 export class UserController {
     constructor(private userService: UserService) {}
+
+    // GET
 
     @Get()
     @Auth([RoleType.ADMIN, RoleType.TEACHER])
@@ -52,6 +56,30 @@ export class UserController {
         return this.userService.getUserById(userId);
     }
 
+    @Get('users-by-classroom/:classroomId')
+    @Auth([RoleType.ADMIN, RoleType.TEACHER, RoleType.STUDENT])
+    @HttpCode(HttpStatus.OK)
+    @ApiPageOkResponse({
+        description: 'Get users by classroom',
+        type: UserEntity,
+    })
+    getUsersByClassroomId(@Param('classroomId') classroomId: string) {
+        return this.userService.getUsersByClassroomId(classroomId);
+    }
+
+    // UPDATE
+
+    @Put(':id')
+    @Auth([RoleType.ADMIN])
+    @HttpCode(HttpStatus.OK)
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description: 'Update user',
+    })
+    updateUser(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+        return this.userService.updateUser(id, updateUserDto);
+    }
+
     @Put('/profile')
     @Auth([RoleType.TEACHER, RoleType.ADMIN, RoleType.STUDENT])
     @HttpCode(HttpStatus.ACCEPTED)
@@ -66,26 +94,16 @@ export class UserController {
         return this.userService.updateUserProfile(user.id, updateProfile);
     }
 
-    @Get('users-by-classroom/:classroomId')
-    @Auth([RoleType.ADMIN, RoleType.TEACHER, RoleType.STUDENT])
-    @HttpCode(HttpStatus.OK)
-    @ApiPageOkResponse({
-        description: 'Get users by classroom',
-        type: UserEntity,
-    })
-    getUsersByClassroomId(@Param('classroomId') classroomId: string) {
-        return this.userService.getUsersByClassroomId(classroomId);
-    }
+    // DELETE
 
-    // @Get('search')
-    // @Auth([RoleType.TEACHER, RoleType.ADMIN])
-    // @HttpCode(HttpStatus.OK)
-    // @ApiResponse({
-    //     status: HttpStatus.OK,
-    //     description: 'Get user info',
-    //     type: UserDto,
-    // })
-    // searchUser(@Query() queryString: SearchUserDto): Promise<UserDto[]> {
-    //     return this.userService.findUser(queryString);
-    // }
+    @Delete('/:id')
+    @Auth([RoleType.ADMIN])
+    @HttpCode(HttpStatus.OK)
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description: 'Delete user',
+    })
+    deleteUser(@Param('id') id: string) {
+        return this.userService.deleteUser(id);
+    }
 }

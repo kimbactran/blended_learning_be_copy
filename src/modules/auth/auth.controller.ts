@@ -51,6 +51,7 @@ export class AuthController {
 
     @Post('register')
     @HttpCode(HttpStatus.OK)
+    @Auth([RoleType.ADMIN])
     @ApiOkResponse({ type: UserDto, description: 'Successfully Registered' })
     async userRegister(
         @Body() userRegisterDto: UserRegisterDto,
