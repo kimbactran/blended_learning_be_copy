@@ -18,8 +18,8 @@ import { ClassroomService } from './classroom.service';
 import { ClassroomDto } from './dto/classroom.dto';
 import { CreateClassroomDto } from './dto/create-classroom.dto';
 import { GetClassroomsDto } from './dto/get-classroom.dto';
-import { JoinStudentsDto } from './dto/join-students.dto';
 import { JoinTeacherDto } from './dto/join-teacher.dto';
+import { JoinUsersDto } from './dto/join-users.dto';
 import { UpdateClassroomDto } from './dto/update-classroom.dto';
 import { UpdateStatusClassroom } from './dto/update-status-classroom.dto';
 
@@ -41,15 +41,15 @@ export class ClassroomController {
         return this.classroomService.createClassroom(createClassroomDto);
     }
 
-    @Post('/join-students')
+    @Post('/join-users')
     @Auth([RoleType.ADMIN, RoleType.TEACHER])
     @HttpCode(HttpStatus.OK)
     @ApiPageOkResponse({
-        description: 'join students to classroom',
+        description: 'join users to classroom',
         type: ClassroomDto,
     })
-    joinStudentsToClass(@Body() joinStudentsDto: JoinStudentsDto) {
-        return this.classroomService.joinStudentsToClassroom(joinStudentsDto);
+    joinUsersToClass(@Body() joinUsersDto: JoinUsersDto) {
+        return this.classroomService.joinUsersToClassroom(joinUsersDto);
     }
 
     @Post('/join-teacher')

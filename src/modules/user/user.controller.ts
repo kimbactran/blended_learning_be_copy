@@ -1,6 +1,6 @@
 import { PageDto } from '@common/dto/page.dto';
 import { RoleType } from '@constants/index';
-import { ApiPageOkResponse, Auth, AuthUser } from '@decorators/index';
+import { ApiPageOkResponse, Auth } from '@decorators/index';
 import {
     Body,
     Controller,
@@ -10,16 +10,11 @@ import {
     HttpStatus,
     Param,
     Put,
-    Query,
-    ValidationPipe,
 } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 
-import { CreateProfileDto } from './dtos/create-profile.dto';
 import { UpdateUserDto } from './dtos/update-user-dto';
 import { UserDto } from './dtos/user.dto';
-import type { UserProfileDto } from './dtos/user-profile.dto';
-import { UsersPageOptionsDto } from './dtos/users-page-options.dto';
 import { UserEntity } from './user.entity';
 import { UserService } from './user.service';
 
@@ -37,11 +32,8 @@ export class UserController {
         description: 'Get users list',
         type: PageDto,
     })
-    getUsers(
-        @Query(new ValidationPipe({ transform: true }))
-        pageOptionsDto: UsersPageOptionsDto,
-    ): Promise<PageDto<UserDto>> {
-        return this.userService.getUsers(pageOptionsDto);
+    getUsers() {
+        return this.userService.getUsers();
     }
 
     @Get(':id')
@@ -78,20 +70,6 @@ export class UserController {
     })
     updateUser(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
         return this.userService.updateUser(id, updateUserDto);
-    }
-
-    @Put('/profile')
-    @Auth([RoleType.TEACHER, RoleType.ADMIN, RoleType.STUDENT])
-    @HttpCode(HttpStatus.ACCEPTED)
-    @ApiResponse({
-        status: HttpStatus.ACCEPTED,
-        description: 'Update user profile',
-    })
-    updateUserProfile(
-        @AuthUser() user: UserEntity,
-        @Body() updateProfile: CreateProfileDto,
-    ): Promise<{ user?: UserProfileDto; success: boolean }> {
-        return this.userService.updateUserProfile(user.id, updateProfile);
     }
 
     // DELETE

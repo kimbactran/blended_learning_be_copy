@@ -1,6 +1,6 @@
 import type { IAbstractEntity } from '@common/abstract.entity';
 import { AbstractEntity } from '@common/abstract.entity';
-import { RoleType } from '@constants/index';
+import { Gender, RoleType } from '@constants/index';
 import { UseDto } from '@decorators/index';
 import { ClassroomEntity } from '@modules/classroom/entities/classroom.entity';
 import { CommentEntity } from '@modules/comment/entities/comment.entity';
@@ -16,13 +16,11 @@ import {
     JoinTable,
     ManyToMany,
     OneToMany,
-    OneToOne,
     PrimaryGeneratedColumn,
 } from 'typeorm';
 
 import type { UserDtoOptions } from './dtos/user.dto';
 import { UserDto } from './dtos/user.dto';
-import { UserProfileEntity } from './user-profile.entity';
 
 export interface IUserEntity extends IAbstractEntity<UserDto> {
     id: Uuid;
@@ -33,7 +31,9 @@ export interface IUserEntity extends IAbstractEntity<UserDto> {
 
     password?: string;
 
-    profile?: UserProfileEntity;
+    name: string;
+
+    gender: Gender;
 
     classrooms: ClassroomEntity[];
 
@@ -67,8 +67,11 @@ export class UserEntity
     @Exclude()
     password?: string;
 
-    @OneToOne(() => UserProfileEntity, (userProfile) => userProfile.user)
-    profile: UserProfileEntity;
+    @Column()
+    name: string;
+
+    @Column({ type: 'enum', enum: Gender, default: Gender.MALE })
+    gender: Gender;
 
     @ManyToMany(() => ClassroomEntity)
     @JoinTable({

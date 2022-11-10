@@ -1,10 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsArray, IsString } from 'class-validator';
 
-export class JoinStudentsDto {
+export class JoinUsersDto {
     @ApiProperty()
     @IsArray()
-    studentIds: string[];
+    userIds: string[];
 
     @ApiProperty()
     @IsString()

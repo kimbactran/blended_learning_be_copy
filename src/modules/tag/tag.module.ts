@@ -5,7 +5,6 @@ import { PostService } from '@modules/post/post.service';
 import { PostStatRepository } from '@modules/post/post-stat.repository';
 import { UserRepository } from '@modules/user/user.repository';
 import { UserService } from '@modules/user/user.service';
-import { UserProfileRepository } from '@modules/user/user-profile.repository';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CheckExistedService } from '@sharedServices/check-existed.service';
@@ -20,7 +19,6 @@ import { TagService } from './tag.service';
             PostRepository,
             PostStatRepository,
             UserRepository,
-            UserProfileRepository,
             TagRepository,
             ClassroomRepository,
         ]),

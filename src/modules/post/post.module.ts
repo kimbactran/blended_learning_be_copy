@@ -3,7 +3,6 @@ import { ClassroomService } from '@modules/classroom/classroom.service';
 import { TagRepository } from '@modules/tag/tag.repository';
 import { UserRepository } from '@modules/user/user.repository';
 import { UserService } from '@modules/user/user.service';
-import { UserProfileRepository } from '@modules/user/user-profile.repository';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CheckExistedService } from '@sharedServices/check-existed.service';
@@ -19,7 +18,6 @@ import { PostStatRepository } from './post-stat.repository';
             PostRepository,
             PostStatRepository,
             UserRepository,
-            UserProfileRepository,
             ClassroomRepository,
             TagRepository,
         ]),

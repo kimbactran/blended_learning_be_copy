@@ -9,8 +9,8 @@ import { ClassroomRepository } from './classroom.repository';
 import type { ClassroomDto } from './dto/classroom.dto';
 import { CreateClassroomDto } from './dto/create-classroom.dto';
 import type { GetClassroomsDto } from './dto/get-classroom.dto';
-import type { JoinStudentsDto } from './dto/join-students.dto';
 import type { JoinTeacherDto } from './dto/join-teacher.dto';
+import type { JoinUsersDto } from './dto/join-users.dto';
 import type { UpdateClassroomDto } from './dto/update-classroom.dto';
 import type { UpdateStatusClassroom } from './dto/update-status-classroom.dto';
 import type { ClassroomEntity } from './entities/classroom.entity';
@@ -33,14 +33,12 @@ export class ClassroomService {
         return classroom;
     }
 
-    async joinStudentsToClassroom(
-        joinStudentsDto: JoinStudentsDto,
-    ): Promise<ClassroomDto> {
-        const { studentIds, classroomId } = joinStudentsDto;
+    async joinUsersToClassroom(joinUsersDto: JoinUsersDto) {
+        const { userIds, classroomId } = joinUsersDto;
 
         const isExistedUsers = this.userRepository
             .createQueryBuilder('user')
-            .where('user.id IN (:...studentIds)', { studentIds });
+            .where('user.id IN (:...userIds)', { userIds });
 
         if (!isExistedUsers) {
             throw new UserNotFoundException();
@@ -66,7 +64,7 @@ export class ClassroomService {
         classroom.users.push(...students);
         await this.classroomRepository.save(classroom);
 
-        return classroom;
+        return { success: true };
     }
 
     async joinTeacherToClassroom(
@@ -123,7 +121,7 @@ export class ClassroomService {
         return classrooms;
     }
 
-    async getByClassroomId(classroomId: string): Promise<ClassroomDto> {
+    async getByClassroomId(classroomId: string) {
         const classroom = await this.classroomRepository
             .createQueryBuilder('classroom')
             .where('classroom.id = :classroomId', { classroomId })
