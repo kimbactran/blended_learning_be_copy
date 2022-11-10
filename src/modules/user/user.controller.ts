@@ -9,10 +9,13 @@ import {
     HttpCode,
     HttpStatus,
     Param,
+    Post,
     Put,
 } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 
+import { JoinClassroomsDto } from './dtos/join-classrooms.dto';
+import { RemoveClassroomFromUserDto } from './dtos/remove-classroom-from-user.dto';
 import { UpdateUserDto } from './dtos/update-user-dto';
 import { UserDto } from './dtos/user.dto';
 import { UserEntity } from './user.entity';
@@ -22,6 +25,34 @@ import { UserService } from './user.service';
 @ApiTags('users')
 export class UserController {
     constructor(private userService: UserService) {}
+
+    // POST
+
+    @Post('/join-classrooms')
+    @Auth([RoleType.ADMIN, RoleType.TEACHER])
+    @HttpCode(HttpStatus.OK)
+    @ApiPageOkResponse({
+        description: 'join classrooms to user',
+        type: UserDto,
+    })
+    joinUsersToClass(@Body() joinClassroomsDto: JoinClassroomsDto) {
+        return this.userService.joinClassroomsToUser(joinClassroomsDto);
+    }
+
+    @Post('remove-classroom-from-user')
+    @Auth([RoleType.ADMIN, RoleType.TEACHER])
+    @HttpCode(HttpStatus.OK)
+    @ApiPageOkResponse({
+        description: 'Remove classroom from user',
+        type: UserDto,
+    })
+    removeClassroomFromUser(
+        @Body() removeClassroomFromUserDto: RemoveClassroomFromUserDto,
+    ) {
+        return this.userService.removeClassroomFromUser(
+            removeClassroomFromUserDto,
+        );
+    }
 
     // GET
 

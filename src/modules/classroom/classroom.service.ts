@@ -9,8 +9,8 @@ import { ClassroomRepository } from './classroom.repository';
 import type { ClassroomDto } from './dto/classroom.dto';
 import { CreateClassroomDto } from './dto/create-classroom.dto';
 import type { GetClassroomsDto } from './dto/get-classroom.dto';
-import type { JoinTeacherDto } from './dto/join-teacher.dto';
 import type { JoinUsersDto } from './dto/join-users.dto';
+import type { RemoveUserFromClassroomDto } from './dto/remove-user-from-classroom.dto';
 import type { UpdateClassroomDto } from './dto/update-classroom.dto';
 import type { UpdateStatusClassroom } from './dto/update-status-classroom.dto';
 import type { ClassroomEntity } from './entities/classroom.entity';
@@ -47,7 +47,7 @@ export class ClassroomService {
         const isExistedClassroom = await this.getByClassroomId(classroomId);
 
         if (!isExistedClassroom) {
-            throw new UserNotFoundException();
+            throw new NotFoundException('Invalid Classroom');
         }
 
         const classroom = await this.classroomRepository
@@ -67,15 +67,10 @@ export class ClassroomService {
         return { success: true };
     }
 
-    async joinTeacherToClassroom(
-        joinTeacherDto: JoinTeacherDto,
-    ): Promise<ClassroomDto> {
-        const { classroomId, teacherId } = joinTeacherDto;
-        const user = await this.userService.getUserById(teacherId);
-
-        if (!user) {
-            throw new UserNotFoundException();
-        }
+    async removeUserFromClassroom(
+        removeUserFromClassroomDto: RemoveUserFromClassroomDto,
+    ) {
+        const { userId, classroomId } = removeUserFromClassroomDto;
 
         const classroom = await this.classroomRepository
             .createQueryBuilder('classroom')
@@ -83,14 +78,19 @@ export class ClassroomService {
             .where('classroom.id = :classroomId', { classroomId })
             .getOne();
 
-        if (!classroom) {
-            throw new NotFoundException('Classroom not found!');
+        const user = await this.userRepository
+            .createQueryBuilder('user')
+            .where('user.id = :userId', { userId })
+            .getOne();
+
+        if (!classroom || !user) {
+            throw new NotFoundException('Error when get classroom and user!');
         }
 
-        classroom.users.push(user);
+        classroom.users = classroom.users.filter((item) => item.id !== user.id);
         await this.classroomRepository.save(classroom);
 
-        return classroom;
+        return { success: true };
     }
 
     // GET

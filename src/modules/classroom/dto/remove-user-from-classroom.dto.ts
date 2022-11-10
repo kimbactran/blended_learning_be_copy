@@ -1,10 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsUUID } from 'class-validator';
 
-export class JoinTeacherDto {
+export class RemoveUserFromClassroomDto {
     @ApiProperty()
     @IsUUID()
-    teacherId: Uuid;
+    userId: Uuid;
 
     @ApiProperty()
     @IsUUID()

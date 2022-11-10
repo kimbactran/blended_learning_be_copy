@@ -1,11 +1,13 @@
 import { UserNotFoundException } from '@exceptions/index';
+import { ClassroomRepository } from '@modules/classroom/classroom.repository';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CommandBus } from '@nestjs/cqrs';
 import type { FindConditions } from 'typeorm';
 import { Transactional } from 'typeorm-transactional-cls-hooked';
 
 import type { Optional } from '../../types';
 import { UserRegisterDto } from '../auth/dto/UserRegisterDto';
+import type { JoinClassroomsDto } from './dtos/join-classrooms.dto';
+import type { RemoveClassroomFromUserDto } from './dtos/remove-classroom-from-user.dto';
 import type { SearchUserDto } from './dtos/search-user.dto';
 import type { UpdateUserDto } from './dtos/update-user-dto';
 import type { UserDto } from './dtos/user.dto';
@@ -16,8 +18,72 @@ import { UserRepository } from './user.repository';
 export class UserService {
     constructor(
         private userRepository: UserRepository,
-        private commandBus: CommandBus,
+        private classroomRepository: ClassroomRepository,
     ) {}
+
+    // POST
+
+    async joinClassroomsToUser(joinClassroomsDto: JoinClassroomsDto) {
+        const { userId, classroomIds } = joinClassroomsDto;
+
+        const isExistedClassrooms = this.classroomRepository
+            .createQueryBuilder('classroom')
+            .where('classroom.id IN (:...classroomIds)', { classroomIds });
+
+        if (!isExistedClassrooms) {
+            throw new NotFoundException('Error when get classrooms');
+        }
+
+        const isExistedUser = await this.getUserById(userId);
+
+        if (!isExistedUser) {
+            throw new NotFoundException('Invalid Classroom');
+        }
+
+        const user = await this.userRepository
+            .createQueryBuilder('user')
+            .leftJoinAndSelect('user.classrooms', 'classroom')
+            .where('user.id = :userId', { userId })
+            .getOne();
+        const classrooms = await isExistedClassrooms.getMany();
+
+        if (!user || !classrooms) {
+            throw new UserNotFoundException();
+        }
+
+        user.classrooms.push(...classrooms);
+        await this.userRepository.save(user);
+
+        return { success: true };
+    }
+
+    async removeClassroomFromUser(
+        removeClassroomFromUserDto: RemoveClassroomFromUserDto,
+    ) {
+        const { userId, classroomId } = removeClassroomFromUserDto;
+
+        const user = await this.userRepository
+            .createQueryBuilder('user')
+            .leftJoinAndSelect('user.classrooms', 'classroom')
+            .where('user.id = :userId', { userId })
+            .getOne();
+
+        const classroom = await this.classroomRepository
+            .createQueryBuilder('classroom')
+            .where('classroom.id = :classroomId', { classroomId })
+            .getOne();
+
+        if (!classroom || !user) {
+            throw new NotFoundException('Error when get classroom and user!');
+        }
+
+        user.classrooms = user.classrooms.filter(
+            (item) => item.id !== classroom.id,
+        );
+        await this.userRepository.save(user);
+
+        return { success: true };
+    }
 
     /**
      * Find single user

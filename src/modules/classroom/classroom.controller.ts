@@ -18,8 +18,8 @@ import { ClassroomService } from './classroom.service';
 import { ClassroomDto } from './dto/classroom.dto';
 import { CreateClassroomDto } from './dto/create-classroom.dto';
 import { GetClassroomsDto } from './dto/get-classroom.dto';
-import { JoinTeacherDto } from './dto/join-teacher.dto';
 import { JoinUsersDto } from './dto/join-users.dto';
+import { RemoveUserFromClassroomDto } from './dto/remove-user-from-classroom.dto';
 import { UpdateClassroomDto } from './dto/update-classroom.dto';
 import { UpdateStatusClassroom } from './dto/update-status-classroom.dto';
 
@@ -52,15 +52,19 @@ export class ClassroomController {
         return this.classroomService.joinUsersToClassroom(joinUsersDto);
     }
 
-    @Post('/join-teacher')
-    @Auth([RoleType.ADMIN])
+    @Post('remove-user-in-classroom')
+    @Auth([RoleType.ADMIN, RoleType.TEACHER])
     @HttpCode(HttpStatus.OK)
     @ApiPageOkResponse({
-        description: 'join teacher to classroom',
+        description: 'Remove user from classroom',
         type: ClassroomDto,
     })
-    joinTeacherToClass(@Body() joinTeacherDto: JoinTeacherDto) {
-        return this.classroomService.joinTeacherToClassroom(joinTeacherDto);
+    removeUserFromClassroom(
+        @Body() removeUserFromClassroomDto: RemoveUserFromClassroomDto,
+    ) {
+        return this.classroomService.removeUserFromClassroom(
+            removeUserFromClassroomDto,
+        );
     }
 
     // GET
@@ -129,7 +133,7 @@ export class ClassroomController {
     }
 
     @Delete(':id')
-    @Auth([RoleType.ADMIN])
+    @Auth([RoleType.ADMIN, RoleType.TEACHER])
     @HttpCode(HttpStatus.OK)
     @ApiPageOkResponse({
         description: 'Delete classroom',
