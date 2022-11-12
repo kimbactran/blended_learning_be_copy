@@ -42,7 +42,7 @@ export class TagEntity
     @PrimaryGeneratedColumn('uuid')
     id: Uuid;
 
-    @Column({ unique: true, nullable: false })
+    @Column({ unique: false, nullable: false })
     tag: string;
 
     @Column({ nullable: true })

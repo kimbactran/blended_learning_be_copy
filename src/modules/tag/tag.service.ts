@@ -7,8 +7,11 @@ import type { UserEntity } from '@modules/user/user.entity';
 import { UserService } from '@modules/user/user.service';
 import { Injectable, NotFoundException } from '@nestjs/common';
 
-import type { CreateSyllabusTagsDto } from './dto/create-syllabus-tags.dto';
-import type { CreateTagDto } from './dto/create-tag.dto';
+import type { AddFreeTagsDto, CreateTagDto } from './dto/create-tag.dto';
+import type {
+    CreateSyllabusTagsDto,
+    TagItemDto,
+} from './dto/syllabus-tags.dto';
 import type { JoinTagsToPost } from './dto/tags-to-post.dto';
 import type { TagEntity } from './entities/tag.entity';
 import { TagRepository } from './tag.repository';
@@ -30,17 +33,15 @@ export class TagService {
         createTagDto: CreateTagDto;
     }): Promise<TagEntity> {
         const { user, createTagDto } = body;
-        const { tag, parentId, type, postId } = createTagDto;
+        const { postId, ...rest } = createTagDto;
 
         if (!user) {
             throw new NotFoundException('Error when get user');
         }
 
         const tagEntity = this.tagRepository.create({
+            ...rest,
             user,
-            tag,
-            parentId,
-            type,
         });
         await this.tagRepository.save(tagEntity);
 
@@ -49,42 +50,6 @@ export class TagService {
         }
 
         return tagEntity;
-    }
-
-    async createSyllabusTags(
-        user: UserEntity,
-        createSyllabusTagsDto: CreateSyllabusTagsDto,
-    ) {
-        if (!user) {
-            throw new NotFoundException('Error when get user');
-        }
-
-        const { tags, classroomId } = createSyllabusTagsDto;
-
-        const syllabusByClassroom = await this.tagRepository
-            .createQueryBuilder('tag')
-            .where('tag.classroom_id = :classroomId', { classroomId })
-            .getMany();
-
-        if (syllabusByClassroom) {
-            await this.tagRepository.remove(syllabusByClassroom);
-        }
-
-        const classroom = await this.classroomService.getByClassroomId(
-            classroomId,
-        );
-
-        const newTags = tags.map((item) => ({
-            user,
-            type: TagType.SYLLABUS,
-            tag: item,
-            classroom,
-        }));
-
-        const tagsEntity = this.tagRepository.create(newTags);
-        await this.tagRepository.save(tagsEntity);
-
-        return tagsEntity;
     }
 
     async joinTagsToPost(joinTagsToPost: JoinTagsToPost): Promise<PostEntity> {
@@ -111,6 +76,116 @@ export class TagService {
         return post;
     }
 
+    async createSyllabusTags(user: UserEntity, testDto: CreateSyllabusTagsDto) {
+        const { classroomId, tags } = testDto;
+
+        const classroom = await this.classroomService.getByClassroomId(
+            classroomId,
+        );
+
+        if (!classroom) {
+            throw new NotFoundException('Error when get classroom');
+        }
+
+        const chapterTag = await this.tagRepository
+            .createQueryBuilder('tag')
+            .where('tag.id = :tagId', { tagId: tags.id })
+            .getOne();
+
+        // create all new tags
+        if (!chapterTag) {
+            const arrCreateSyllabusTags = [
+                {
+                    tag: tags.tag,
+                    id: tags.id,
+                    type: TagType.SYLLABUS,
+                    user,
+                    classroom,
+                },
+            ];
+
+            if (tags.children?.length) {
+                for (const item of tags.children) {
+                    arrCreateSyllabusTags.push({
+                        ...item,
+                        type: TagType.SYLLABUS,
+                        user,
+                        classroom,
+                    });
+                }
+            }
+
+            const tagsEntity = this.tagRepository.create(arrCreateSyllabusTags);
+            await this.tagRepository.save(tagsEntity);
+
+            return { success: true };
+        }
+
+        // create & update tags
+        const arrTags = [] as TagItemDto[];
+        arrTags.push({ id: tags.id, tag: tags.tag }, ...(tags?.children || []));
+        const existedTags = await this.tagRepository
+            .createQueryBuilder('tag')
+            .where('tag.id IN (:...tagIds)', {
+                tagIds: arrTags.map(({ id }) => id),
+            })
+            .getMany();
+
+        const arrCreateTags = arrTags.filter(
+            (item) => !existedTags.map(({ id }) => id).includes(item.id),
+        );
+
+        if (!existedTags) {
+            throw new NotFoundException('Error when get existedTags');
+        }
+
+        const updatedTags = existedTags.map((item) =>
+            this.tagRepository.merge(
+                item,
+                arrTags.find(({ id }) => id === item.id) || {},
+            ),
+        );
+
+        await this.tagRepository.save(updatedTags);
+        await this.tagRepository.save(
+            arrCreateTags.map((item) => ({
+                ...item,
+                user,
+                classroom,
+                type: TagType.SYLLABUS,
+            })),
+        );
+
+        return { success: true };
+    }
+
+    async createFreeTags(user: UserEntity, addFreeTagsDto: AddFreeTagsDto) {
+        const { classroomId, tags } = addFreeTagsDto;
+
+        if (!user) {
+            throw new NotFoundException('Error when get user');
+        }
+
+        const classroom = await this.classroomService.getByClassroomId(
+            classroomId,
+        );
+
+        if (!classroom) {
+            throw new NotFoundException('Error when get classroom');
+        }
+
+        const tagsEntity = this.tagRepository.create(
+            tags.map((item) => ({
+                tag: item,
+                user,
+                classroom,
+            })),
+        );
+        await this.tagRepository.save(tagsEntity);
+
+        return tagsEntity;
+    }
+
     // GET
 
     async getTags(keySearch?: string) {
@@ -131,19 +206,16 @@ export class TagService {
         return tags;
     }
 
-    async getSyllabusTagsByClassroom(classroomId: string) {
-        const syllabusTags = await this.tagRepository
+    async getTagsByClassroom(classroomId: string) {
+        const tags = await this.tagRepository
             .createQueryBuilder('tag')
-            .where("tag.type = 'SYLLABUS'")
-            .andWhere('tag.classroom_id = :classroomId', { classroomId })
+            .where('tag.classroom_id = :classroomId', { classroomId })
             .getMany();
 
-        if (!syllabusTags) {
-            throw new NotFoundException(
-                'Error when get syllabus tags by classroom',
-            );
+        if (!tags) {
+            throw new NotFoundException('Error when get tags');
         }
 
-        return syllabusTags;
+        return tags;
     }
 }

@@ -21,7 +21,6 @@ import { GetClassroomsDto } from './dto/get-classroom.dto';
 import { JoinUsersDto } from './dto/join-users.dto';
 import { RemoveUserFromClassroomDto } from './dto/remove-user-from-classroom.dto';
 import { UpdateClassroomDto } from './dto/update-classroom.dto';
-import { UpdateStatusClassroom } from './dto/update-status-classroom.dto';
 
 @Controller('classrooms')
 @ApiTags('classrooms')
@@ -31,7 +30,7 @@ export class ClassroomController {
     // POST
 
     @Post()
-    @Auth([RoleType.ADMIN])
+    @Auth([RoleType.ADMIN, RoleType.TEACHER])
     @HttpCode(HttpStatus.OK)
     @ApiPageOkResponse({
         description: 'create classroom',
@@ -70,7 +69,7 @@ export class ClassroomController {
     // GET
 
     @Get()
-    @Auth([RoleType.ADMIN])
+    @Auth([RoleType.ADMIN, RoleType.TEACHER])
     @HttpCode(HttpStatus.OK)
     @ApiPageOkResponse({
         description: 'Get classrooms',
@@ -104,19 +103,19 @@ export class ClassroomController {
 
     // PUT
 
-    @Put('/change-status/:id')
-    @Auth([RoleType.ADMIN])
-    @HttpCode(HttpStatus.OK)
-    @ApiPageOkResponse({
-        description: 'Update status classroom',
-        type: ClassroomDto,
-    })
-    updateStatus(
-        @Param('id') id: string,
-        @Body() updateStatusClassroom: UpdateStatusClassroom,
-    ) {
-        return this.classroomService.updateStatus(id, updateStatusClassroom);
-    }
+    // @Put('/change-status/:id')
+    // @Auth([RoleType.ADMIN, RoleType.TEACHER])
+    // @HttpCode(HttpStatus.OK)
+    // @ApiPageOkResponse({
+    //     description: 'Update status classroom',
+    //     type: ClassroomDto,
+    // })
+    // updateStatus(
+    //     @Param('id') id: string,
+    //     @Body() updateStatusClassroom: UpdateStatusClassroom,
+    // ) {
+    //     return this.classroomService.updateStatus(id, updateStatusClassroom);
+    // }
 
     @Put(':id')
     @Auth([RoleType.ADMIN, RoleType.TEACHER])

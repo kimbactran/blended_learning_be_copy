@@ -15,8 +15,8 @@ import {
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
-import { CreateSyllabusTagsDto } from './dto/create-syllabus-tags.dto';
-import { CreateTagDto } from './dto/create-tag.dto';
+import { AddFreeTagsDto, CreateTagDto } from './dto/create-tag.dto';
+import { CreateSyllabusTagsDto } from './dto/syllabus-tags.dto';
 import { TagDto } from './dto/tag.dto';
 import { JoinTagsToPost } from './dto/tags-to-post.dto';
 import { TagService } from './tag.service';
@@ -59,6 +59,20 @@ export class TagController {
         return this.tagService.createSyllabusTags(user, createSyllabusTagsDto);
     }
 
+    @Post('free')
+    @Auth([RoleType.TEACHER, RoleType.ADMIN, RoleType.STUDENT])
+    @HttpCode(HttpStatus.OK)
+    @ApiPageOkResponse({
+        description: 'create free tags',
+        type: TagDto,
+    })
+    createFreeTags(
+        @AuthUser() user: UserEntity,
+        @Body() addFreeTagsDto: AddFreeTagsDto,
+    ) {
+        return this.tagService.createFreeTags(user, addFreeTagsDto);
+    }
+
     @Post('tags-to-post')
     @Auth([RoleType.STUDENT, RoleType.TEACHER])
     @HttpCode(HttpStatus.OK)
@@ -72,16 +86,16 @@ export class TagController {
 
     // GET
 
-    @Get('syllabus/:classroomId')
-    @Auth([RoleType.TEACHER, RoleType.ADMIN, RoleType.STUDENT])
-    @HttpCode(HttpStatus.OK)
-    @ApiPageOkResponse({
-        description: 'get syllabus tags by classroom',
-        type: TagDto,
-    })
-    getSyllabusTagsByClassroom(@Param('classroomId') classroomId: string) {
-        return this.tagService.getSyllabusTagsByClassroom(classroomId);
-    }
+    // @Get('syllabus/:classroomId')
+    // @Auth([RoleType.TEACHER, RoleType.ADMIN, RoleType.STUDENT])
+    // @HttpCode(HttpStatus.OK)
+    // @ApiPageOkResponse({
+    //     description: 'get syllabus tags by classroom',
+    //     type: TagDto,
+    // })
+    // getSyllabusTagsByClassroom(@Param('classroomId') classroomId: string) {
+    //     return this.tagService.getSyllabusTagsByClassroom(classroomId);
+    // }
 
     @Get()
     @Auth([RoleType.TEACHER, RoleType.ADMIN, RoleType.STUDENT])
@@ -92,6 +106,17 @@ export class TagController {
     })
     getTags(@Query('keySearch') keySearch?: string) {
         return this.tagService.getTags(keySearch);
+    }
+
+    @Get('/tag-by-classroom/:classroomId')
+    @Auth([RoleType.TEACHER, RoleType.ADMIN, RoleType.STUDENT])
+    @HttpCode(HttpStatus.OK)
+    @ApiPageOkResponse({
+        description: 'get tags',
+        type: TagDto,
+    })
+    getTagsByClassroom(@Param('classroomId') classroomId: string) {
+        return this.tagService.getTagsByClassroom(classroomId);
     }
 
     // UPDATE

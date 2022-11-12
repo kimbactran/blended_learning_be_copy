@@ -4,6 +4,8 @@ import {
     StringField,
     StringFieldOptional,
 } from '@decorators/field.decorators';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsArray } from 'class-validator';
 
 export class CreateTagDto {
     @StringField()
@@ -17,6 +19,18 @@ export class CreateTagDto {
 
     @EnumFieldOptional(() => TagType)
     type: TagType;
+
+    @StringFieldOptional()
+    postId?: Uuid;
+}
+
+export class AddFreeTagsDto {
+    @StringField()
+    classroomId: string;
+
+    @ApiProperty()
+    @IsArray()
+    tags: string[];
 
     @StringFieldOptional()
     postId?: Uuid;
