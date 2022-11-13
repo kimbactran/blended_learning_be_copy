@@ -1,6 +1,7 @@
 import type { IAbstractEntity } from '@common/abstract.entity';
 import { AbstractEntity } from '@common/abstract.entity';
 import { UseDto } from '@decorators/index';
+import { ClassroomEntity } from '@modules/classroom/entities/classroom.entity';
 import { PostEntity } from '@modules/post/entities/post.entity';
 import { UserEntity } from '@modules/user/user.entity';
 import {
@@ -26,6 +27,8 @@ export interface ICommentEntity extends IAbstractEntity<CommentDto> {
 
     post?: PostEntity;
 
+    classrooms?: ClassroomEntity;
+
     commentStats?: CommentStatEntity[];
 }
 
@@ -49,6 +52,9 @@ export class CommentEntity
 
     @ManyToOne(() => PostEntity, (post) => post.comments)
     post: PostEntity;
+
+    @ManyToOne(() => ClassroomEntity, (classroom) => classroom.comments)
+    classroom: ClassroomEntity;
 
     @OneToMany(() => CommentStatEntity, (commentStat) => commentStat.comment, {
         onDelete: 'CASCADE',

@@ -1,4 +1,5 @@
 import { Order } from '@constants/index';
+import { ClassroomService } from '@modules/classroom/classroom.service';
 import type { VoteDto } from '@modules/post/dto/vote.dto';
 import { PostService } from '@modules/post/post.service';
 import type { UserEntity } from '@modules/user/user.entity';
@@ -10,7 +11,7 @@ import type { DeleteDto } from 'shared/dto/delete-dto';
 import { CommentRepository } from './comment.repository';
 import { CommentStatRepository } from './comment-stat.repository';
 import type { CreateCommentDto } from './dto/create-comment.dto';
-import type { GetCommentsByPostDto } from './dto/get-comments.dto';
+import type { GetCommentsDto } from './dto/get-comments.dto';
 import type { UpdateCommentDto } from './dto/update-comment.dto';
 import type { CommentEntity } from './entities/comment.entity';
 
@@ -19,6 +20,7 @@ export class CommentService {
     constructor(
         private userService: UserService,
         private postService: PostService,
+        private classroomService: ClassroomService,
         private commentRepository: CommentRepository,
         private commentStatRepository: CommentStatRepository,
     ) {}
@@ -29,19 +31,26 @@ export class CommentService {
     }): Promise<CommentEntity> {
         const { userId, createCommentDto } = body;
 
-        const { content, parentId, postId } = createCommentDto;
+        const { content, parentId, postId, classroomId } = createCommentDto;
 
         const user = await this.userService.getUserById(userId);
 
         const post = await this.postService.getPostById(postId);
 
-        if (!user || !post) {
-            throw new NotFoundException('Error when get user or post');
+        const classroom = await this.classroomService.getByClassroomId(
+            classroomId,
+        );
+
+        if (!user || !post || !classroom) {
+            throw new NotFoundException(
+                'Error when get user or post or classroom',
+            );
         }
 
         const comment = this.commentRepository.create({
             user,
             post,
+            classroom,
             content,
             parentId,
         });
@@ -51,18 +60,24 @@ export class CommentService {
         return comment;
     }
 
-    async getCommentsByPostId(
-        user: UserEntity,
-        getCommentsByPostDto: GetCommentsByPostDto,
-    ) {
-        const { postId, order } = getCommentsByPostDto;
+    async getComments(user: UserEntity, getCommentsDto: GetCommentsDto) {
+        const { postId, classroomId, order } = getCommentsDto;
 
         const query = this.commentRepository
             .createQueryBuilder('comment')
             .leftJoinAndSelect('comment.user', 'user')
             .leftJoinAndSelect('comment.commentStats', 'stat')
-            .leftJoinAndSelect('stat.user', 'stat_user')
-            .where('comment.post_id = :postId', { postId });
+            .leftJoinAndSelect('stat.user', 'stat_user');
+
+        if (postId) {
+            query.orWhere('comment.post_id = :postId', { postId });
+        }
+
+        if (classroomId) {
+            query.orWhere('comment.classroom_id = :classroomId', {
+                classroomId,
+            });
+        }
 
         if (order && order !== Order.HIGH_SCORES) {
             query.orderBy('comment.updated_at', order);

@@ -1,9 +1,16 @@
 import { Order } from '@constants/index';
-import { EnumFieldOptional, StringField } from '@decorators/field.decorators';
+import { EnumFieldOptional } from '@decorators/field.decorators';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsString } from 'class-validator';
 
-export class GetCommentsByPostDto {
-    @StringField()
-    postId: string;
+export class GetCommentsDto {
+    @ApiProperty()
+    @IsString()
+    postId?: string;
+
+    @ApiProperty()
+    @IsString()
+    classroomId?: string;
 
     @EnumFieldOptional(() => Order)
     order?: Order;

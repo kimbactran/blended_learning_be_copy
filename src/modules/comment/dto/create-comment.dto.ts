@@ -9,4 +9,7 @@ export class CreateCommentDto {
 
     @StringField()
     postId: string;
+
+    @StringField()
+    classroomId: string;
 }
