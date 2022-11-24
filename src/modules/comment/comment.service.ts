@@ -65,6 +65,7 @@ export class CommentService {
 
         const query = this.commentRepository
             .createQueryBuilder('comment')
+            .leftJoinAndSelect('comment.post', 'post')
             .leftJoinAndSelect('comment.user', 'user')
             .leftJoinAndSelect('comment.commentStats', 'stat')
             .leftJoinAndSelect('stat.user', 'stat_user');
@@ -89,8 +90,8 @@ export class CommentService {
             throw new NotFoundException('Comments not found!');
         }
 
-        const newComments = comments.map((post) => {
-            const { commentStats, ...tempComment } = post;
+        const newComments = comments.map((comment) => {
+            const { commentStats, post, ...tempComment } = comment;
 
             const findCommentStat = commentStats.find(
                 (item) => user.id === item.user.id,
@@ -109,6 +110,7 @@ export class CommentService {
                 numDownVote,
                 isUpVote: findCommentStat?.isUpVote || false,
                 isDownVote: findCommentStat?.isDownVote || false,
+                postId: post.id,
             };
         });
 

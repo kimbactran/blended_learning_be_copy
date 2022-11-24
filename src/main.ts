@@ -12,7 +12,7 @@ import { ExpressAdapter } from '@nestjs/platform-express';
 // import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import compression from 'compression';
 import { middleware as expressCtx } from 'express-ctx';
-import rateLimit from 'express-rate-limit';
+// import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import {
@@ -38,12 +38,12 @@ export async function bootstrap(): Promise<NestExpressApplication> {
     //   app.enable('trust proxy'); // only if you're behind a reverse proxy (Heroku, Bluemix, AWS ELB, Nginx, etc)
     app.use(helmet());
     app.setGlobalPrefix('/v1');
-    app.use(
-        rateLimit({
-            windowMs: 15 * 60 * 1000, // 15 minutes
-            max: 100, // limit each IP to 100 requests per windowMs
-        }),
-    );
+    // app.use(
+    //     rateLimit({
+    //         windowMs: 15 * 60 * 1000, // 15 minutes
+    //         max: 100, // limit each IP to 100 requests per windowMs
+    //     }),
+    // );
     app.use(compression());
     app.use(
         morgan(':method :url :status :res[content-length] - :response-time ms'),

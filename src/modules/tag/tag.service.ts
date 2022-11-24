@@ -6,6 +6,7 @@ import { PostService } from '@modules/post/post.service';
 import type { UserEntity } from '@modules/user/user.entity';
 import { UserService } from '@modules/user/user.service';
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { sortBy } from 'lodash';
 
 import type { AddFreeTagsDto, CreateTagDto } from './dto/create-tag.dto';
 import type {
@@ -121,9 +122,17 @@ export class TagService {
             return { success: true };
         }
 
+        const chapterItemTags = await this.tagRepository
+            .createQueryBuilder('tag')
+            .where('tag.parent_id = :parentId', { parentId: tags.id })
+            .getMany();
+
         // create & update tags
         const arrTags = [] as TagItemDto[];
         arrTags.push({ id: tags.id, tag: tags.tag }, ...(tags?.children || []));
+        const removedTags = chapterItemTags.filter(
+            (item) => !tags?.children?.map(({ id }) => id).includes(item.id),
+        );
         const existedTags = await this.tagRepository
             .createQueryBuilder('tag')
             .where('tag.id IN (:...tagIds)', {
@@ -146,6 +155,7 @@ export class TagService {
             ),
         );
 
+        await this.tagRepository.remove(removedTags);
         await this.tagRepository.save(updatedTags);
         await this.tagRepository.save(
             arrCreateTags.map((item) => ({
@@ -188,24 +198,6 @@ export class TagService {
 
     // GET
 
-    async getTags(keySearch?: string) {
-        const query = this.tagRepository.createQueryBuilder('tag');
-
-        if (keySearch) {
-            query.andWhere('LOWER(tag.tag) LIKE LOWER(:keySearch)', {
-                keySearch: `%${keySearch}%`,
-            });
-        }
-
-        const tags = await query.getMany();
-
-        if (!tags) {
-            throw new NotFoundException('Error when get tags');
-        }
-
-        return tags;
-    }
-
     async getTagsByClassroom(classroomId: string) {
         const tags = await this.tagRepository
             .createQueryBuilder('tag')
@@ -216,6 +208,28 @@ export class TagService {
             throw new NotFoundException('Error when get tags');
         }
 
-        return tags;
+        return sortBy(tags, ['type', 'createdAt'], ['DESC']);
+    }
+
+    // DELETE
+
+    async deleteChapterTags(chapterId: string) {
+        const chapterTag = await this.tagRepository
+            .createQueryBuilder('tag')
+            .where('tag.id = :chapterId', { chapterId })
+            .getOne();
+
+        const chapterItemTags = await this.tagRepository
+            .createQueryBuilder('tag')
+            .where('tag.parent_id = :chapterId', { chapterId })
+            .getMany();
+
+        if (!chapterTag || !chapterItemTags) {
+            throw new NotFoundException('Error when get tags');
+        }
+
+        await this.tagRepository.remove([chapterTag, ...chapterItemTags]);
+
+        return { success: true };
     }
 }

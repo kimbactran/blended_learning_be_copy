@@ -1,9 +1,16 @@
-import { StringField, StringFieldOptional } from '@decorators/index';
+import { StatusClassroom } from '@constants/status';
+import { EnumFieldOptional, StringField } from '@decorators/index';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsString } from 'class-validator';
 
 export class CreateClassroomDto {
     @StringField()
     title: string;
 
-    @StringFieldOptional()
+    @EnumFieldOptional(() => StatusClassroom)
+    status: StatusClassroom;
+
+    @ApiProperty()
+    @IsString()
     resources: string;
 }

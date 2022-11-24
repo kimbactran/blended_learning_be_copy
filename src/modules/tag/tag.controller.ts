@@ -6,16 +6,16 @@ import { UserEntity } from '@modules/user/user.entity';
 import {
     Body,
     Controller,
+    Delete,
     Get,
     HttpCode,
     HttpStatus,
     Param,
     Post,
-    Query,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
-import { AddFreeTagsDto, CreateTagDto } from './dto/create-tag.dto';
+import { AddFreeTagsDto } from './dto/create-tag.dto';
 import { CreateSyllabusTagsDto } from './dto/syllabus-tags.dto';
 import { TagDto } from './dto/tag.dto';
 import { JoinTagsToPost } from './dto/tags-to-post.dto';
@@ -27,23 +27,6 @@ export class TagController {
     constructor(private readonly tagService: TagService) {}
 
     // POST
-
-    @Post()
-    @Auth([RoleType.STUDENT, RoleType.TEACHER])
-    @HttpCode(HttpStatus.OK)
-    @ApiPageOkResponse({
-        description: 'create tag',
-        type: TagDto,
-    })
-    createTag(
-        @AuthUser() user: UserEntity,
-        @Body() createTagDto: CreateTagDto,
-    ) {
-        return this.tagService.createTag({
-            user,
-            createTagDto,
-        });
-    }
 
     @Post('syllabus')
     @Auth([RoleType.TEACHER])
@@ -86,28 +69,6 @@ export class TagController {
 
     // GET
 
-    // @Get('syllabus/:classroomId')
-    // @Auth([RoleType.TEACHER, RoleType.ADMIN, RoleType.STUDENT])
-    // @HttpCode(HttpStatus.OK)
-    // @ApiPageOkResponse({
-    //     description: 'get syllabus tags by classroom',
-    //     type: TagDto,
-    // })
-    // getSyllabusTagsByClassroom(@Param('classroomId') classroomId: string) {
-    //     return this.tagService.getSyllabusTagsByClassroom(classroomId);
-    // }
-
-    @Get()
-    @Auth([RoleType.TEACHER, RoleType.ADMIN, RoleType.STUDENT])
-    @HttpCode(HttpStatus.OK)
-    @ApiPageOkResponse({
-        description: 'get tags',
-        type: TagDto,
-    })
-    getTags(@Query('keySearch') keySearch?: string) {
-        return this.tagService.getTags(keySearch);
-    }
-
     @Get('/tag-by-classroom/:classroomId')
     @Auth([RoleType.TEACHER, RoleType.ADMIN, RoleType.STUDENT])
     @HttpCode(HttpStatus.OK)
@@ -122,4 +83,15 @@ export class TagController {
     // UPDATE
 
     // DELETE
+
+    @Delete('/syllabus/:chapterId')
+    @Auth([RoleType.TEACHER])
+    @HttpCode(HttpStatus.OK)
+    @ApiPageOkResponse({
+        description: 'Delete chapter tags in syllabus',
+        type: TagDto,
+    })
+    deleteChapterTags(@Param('chapterId') chapterId: string) {
+        return this.tagService.deleteChapterTags(chapterId);
+    }
 }
