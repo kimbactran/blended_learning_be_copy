@@ -47,13 +47,19 @@ export class CommentEntity
     @Column({ nullable: true })
     parentId: Uuid;
 
-    @ManyToOne(() => UserEntity, (user) => user.comments)
+    @ManyToOne(() => UserEntity, (user) => user.comments, {
+        onDelete: 'CASCADE',
+    })
     user: UserEntity;
 
-    @ManyToOne(() => PostEntity, (post) => post.comments)
+    @ManyToOne(() => PostEntity, (post) => post.comments, {
+        onDelete: 'CASCADE',
+    })
     post: PostEntity;
 
-    @ManyToOne(() => ClassroomEntity, (classroom) => classroom.comments)
+    @ManyToOne(() => ClassroomEntity, (classroom) => classroom.comments, {
+        onDelete: 'CASCADE',
+    })
     classroom: ClassroomEntity;
 
     @OneToMany(() => CommentStatEntity, (commentStat) => commentStat.comment, {

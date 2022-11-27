@@ -32,7 +32,7 @@ export class PostController {
     // POST
 
     @Post()
-    @Auth([RoleType.STUDENT])
+    @Auth([RoleType.STUDENT, RoleType.TEACHER])
     @HttpCode(HttpStatus.OK)
     @ApiPageOkResponse({
         description: 'create post',
@@ -97,7 +97,7 @@ export class PostController {
     // UPDATE
 
     @Put(':id')
-    @Auth([RoleType.STUDENT])
+    @Auth([RoleType.STUDENT, RoleType.TEACHER])
     @HttpCode(HttpStatus.OK)
     @ApiResponse({
         status: HttpStatus.OK,
@@ -135,7 +135,7 @@ export class PostController {
     // DELETE
 
     @Delete(':id')
-    @Auth([RoleType.STUDENT])
+    @Auth([RoleType.STUDENT, RoleType.TEACHER])
     @HttpCode(HttpStatus.OK)
     @ApiResponse({
         status: HttpStatus.OK,

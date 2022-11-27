@@ -46,7 +46,9 @@ export class PostStatEntity
     @Column({ nullable: false, default: 0 })
     isViewed: number;
 
-    @ManyToOne(() => UserEntity, (user) => user.postStats)
+    @ManyToOne(() => UserEntity, (user) => user.postStats, {
+        onDelete: 'CASCADE',
+    })
     @JoinColumn()
     user: UserEntity;
 

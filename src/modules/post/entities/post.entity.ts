@@ -53,15 +53,15 @@ export class PostEntity
     @Column({ nullable: false })
     content: string;
 
-    @ManyToOne(() => UserEntity, (user) => user.posts)
+    @ManyToOne(() => UserEntity, (user) => user.posts, { onDelete: 'CASCADE' })
     user: UserEntity;
 
-    @ManyToOne(() => ClassroomEntity, (classroom) => classroom.posts)
-    classroom: ClassroomEntity;
-
-    @OneToMany(() => PostStatEntity, (postStat) => postStat.post, {
+    @ManyToOne(() => ClassroomEntity, (classroom) => classroom.posts, {
         onDelete: 'CASCADE',
     })
+    classroom: ClassroomEntity;
+
+    @OneToMany(() => PostStatEntity, (postStat) => postStat.post)
     @JoinColumn()
     postStats: PostStatEntity[];
 

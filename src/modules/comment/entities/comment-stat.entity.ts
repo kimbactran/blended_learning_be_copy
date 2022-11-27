@@ -41,7 +41,9 @@ export class CommentStatEntity
     @Column({ nullable: false, default: false })
     isDownVote: boolean;
 
-    @ManyToOne(() => UserEntity, (user) => user.commentStats)
+    @ManyToOne(() => UserEntity, (user) => user.commentStats, {
+        onDelete: 'CASCADE',
+    })
     @JoinColumn()
     user: UserEntity;
 

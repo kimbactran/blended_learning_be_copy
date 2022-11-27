@@ -1,5 +1,6 @@
 import { ClassroomRepository } from '@modules/classroom/classroom.repository';
 import { ClassroomService } from '@modules/classroom/classroom.service';
+import { CommentRepository } from '@modules/comment/comment.repository';
 import { PostRepository } from '@modules/post/post.repository';
 import { PostService } from '@modules/post/post.service';
 import { PostStatRepository } from '@modules/post/post-stat.repository';
@@ -21,6 +22,7 @@ import { TagService } from './tag.service';
             UserRepository,
             TagRepository,
             ClassroomRepository,
+            CommentRepository,
         ]),
     ],
     controllers: [TagController],

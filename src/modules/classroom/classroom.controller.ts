@@ -30,7 +30,7 @@ export class ClassroomController {
     // POST
 
     @Post()
-    @Auth([RoleType.ADMIN, RoleType.TEACHER])
+    @Auth([RoleType.ADMIN])
     @HttpCode(HttpStatus.OK)
     @ApiPageOkResponse({
         description: 'create classroom',
@@ -103,20 +103,6 @@ export class ClassroomController {
 
     // PUT
 
-    // @Put('/change-status/:id')
-    // @Auth([RoleType.ADMIN, RoleType.TEACHER])
-    // @HttpCode(HttpStatus.OK)
-    // @ApiPageOkResponse({
-    //     description: 'Update status classroom',
-    //     type: ClassroomDto,
-    // })
-    // updateStatus(
-    //     @Param('id') id: string,
-    //     @Body() updateStatusClassroom: UpdateStatusClassroom,
-    // ) {
-    //     return this.classroomService.updateStatus(id, updateStatusClassroom);
-    // }
-
     @Put(':id')
     @Auth([RoleType.ADMIN, RoleType.TEACHER])
     @HttpCode(HttpStatus.OK)
@@ -132,7 +118,7 @@ export class ClassroomController {
     }
 
     @Delete(':id')
-    @Auth([RoleType.ADMIN, RoleType.TEACHER])
+    @Auth([RoleType.ADMIN])
     @HttpCode(HttpStatus.OK)
     @ApiPageOkResponse({
         description: 'Delete classroom',

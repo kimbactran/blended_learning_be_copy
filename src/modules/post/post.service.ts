@@ -1,6 +1,7 @@
 import { Order } from '@constants/index';
 import { UnjoinedToClassroomException } from '@exceptions/unjoined-classroom.exception';
 import { ClassroomService } from '@modules/classroom/classroom.service';
+import { CommentRepository } from '@modules/comment/comment.repository';
 import type { TagEntity } from '@modules/tag/entities/tag.entity';
 import { TagRepository } from '@modules/tag/tag.repository';
 import type { UserEntity } from '@modules/user/user.entity';
@@ -29,6 +30,7 @@ export class PostService {
         private userService: UserService,
         private classroomService: ClassroomService,
         private tagRepository: TagRepository,
+        private commentRepository: CommentRepository,
     ) {}
 
     // POST
@@ -294,11 +296,17 @@ export class PostService {
             .andWhere('post.user_id = :userId', { userId })
             .getOne();
 
-        if (!post) {
-            throw new NotFoundException('Post not found!');
+        const commentsByPost = await this.commentRepository
+            .createQueryBuilder('comment')
+            .where('comment.post_id = :postId', { postId })
+            .getMany();
+
+        if (!post || !commentsByPost) {
+            throw new NotFoundException('Post or comments by post not found!');
         }
 
         await this.postRepository.remove(post);
+        await this.commentRepository.remove(commentsByPost);
 
         return { success: true };
     }

@@ -51,10 +51,12 @@ export class TagEntity
     @Column({ nullable: false, default: TagType.FREE })
     type: TagType;
 
-    @ManyToOne(() => UserEntity, (user) => user.tags)
+    @ManyToOne(() => UserEntity, (user) => user.tags, { onDelete: 'CASCADE' })
     user: UserEntity;
 
-    @ManyToOne(() => ClassroomEntity, (classroom) => classroom.tags)
+    @ManyToOne(() => ClassroomEntity, (classroom) => classroom.tags, {
+        onDelete: 'CASCADE',
+    })
     classroom: ClassroomEntity;
 
     @ManyToMany(() => PostEntity)
