@@ -33,7 +33,7 @@ export class CommentController {
     // POST
 
     @Post()
-    @Auth([RoleType.STUDENT])
+    @Auth([RoleType.STUDENT, RoleType.TEACHER])
     @HttpCode(HttpStatus.OK)
     @ApiResponse({
         status: HttpStatus.OK,
@@ -102,7 +102,7 @@ export class CommentController {
     }
 
     @Put('vote/:id')
-    @Auth([RoleType.STUDENT])
+    @Auth([RoleType.STUDENT, RoleType.TEACHER])
     @HttpCode(HttpStatus.OK)
     @ApiResponse({
         status: HttpStatus.OK,
@@ -124,7 +124,7 @@ export class CommentController {
     // DELETE
 
     @Delete(':id')
-    @Auth([RoleType.STUDENT])
+    @Auth([RoleType.STUDENT, RoleType.TEACHER])
     @HttpCode(HttpStatus.OK)
     @ApiResponse({
         status: HttpStatus.OK,

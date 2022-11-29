@@ -1,4 +1,4 @@
-import { Gender } from '@constants/index';
+import { Gender, RoleType } from '@constants/index';
 import { EnumField, StringField } from '@decorators/field.decorators';
 import { Trim } from '@decorators/transform.decorators';
 import { ApiProperty } from '@nestjs/swagger';
@@ -22,4 +22,7 @@ export class UserRegisterDto {
 
     @EnumField(() => Gender)
     gender: Gender;
+
+    @EnumField(() => RoleType)
+    role: RoleType;
 }
