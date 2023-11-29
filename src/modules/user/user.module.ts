@@ -1,7 +1,6 @@
 import { ClassroomRepository } from '@modules/classroom/classroom.repository';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AwsS3Service } from '@sharedServices/aws-s3.service';
 import { ValidatorService } from '@sharedServices/validator.service';
 
 import { UserController } from './user.controller';
@@ -12,6 +11,6 @@ import { UserService } from './user.service';
     imports: [TypeOrmModule.forFeature([UserRepository, ClassroomRepository])],
     controllers: [UserController],
     exports: [UserService],
-    providers: [UserService, ValidatorService, AwsS3Service],
+    providers: [UserService, ValidatorService],
 })
 export class UserModule {}
