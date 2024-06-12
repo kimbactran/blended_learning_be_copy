@@ -18,4 +18,8 @@ export class CreatePostDto {
     @IsArray()
     @IsOptional()
     tagIds?: string[];
+
+    @ApiProperty()
+    @IsString()
+    imageUrl: string;
 }

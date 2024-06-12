@@ -51,7 +51,7 @@ export class ClassroomController {
         return this.classroomService.joinUsersToClassroom(joinUsersDto);
     }
 
-    @Post('remove-user-in-classroom')
+    @Post('/remove-user-in-classroom')
     @Auth([RoleType.ADMIN, RoleType.TEACHER])
     @HttpCode(HttpStatus.OK)
     @ApiPageOkResponse({

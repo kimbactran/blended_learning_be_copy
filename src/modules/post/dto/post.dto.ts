@@ -28,6 +28,9 @@ export class PostDto extends AbstractDto {
     @ApiPropertyOptional()
     tags: TagDto[];
 
+    @ApiProperty()
+    imageUrl: string;
+
     constructor(post: PostEntity, options?: PostDtoOptions) {
         super(post, options);
 
@@ -36,5 +39,6 @@ export class PostDto extends AbstractDto {
         this.user = post.user?.toDto({ excludeFields: true });
         this.classroom = post.classroom?.toDto({ excludeFields: true });
         this.tags = post.tags?.toDtos({ excludeFields: true });
+        this.imageUrl = post.imageUrl;
     }
 }

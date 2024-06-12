@@ -41,7 +41,7 @@ export class PostService {
         createPostDto: CreatePostDto;
     }): Promise<PostDto> {
         const { userId, createPostDto } = body;
-        const { title, content, classroomId, tagIds } = createPostDto;
+        const { title, content, classroomId, tagIds, imageUrl } = createPostDto;
 
         const isExistedStudentInClassroom =
             await this.checkExistedService.isExistedStudentInClassroom({
@@ -78,6 +78,7 @@ export class PostService {
             user,
             classroom,
             tags,
+            imageUrl,
         });
         await this.postRepository.save(post);
 

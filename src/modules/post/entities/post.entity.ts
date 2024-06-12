@@ -36,6 +36,8 @@ export interface IPostEntity extends IAbstractEntity<PostDto> {
     comments?: CommentEntity[];
 
     tags?: TagEntity[];
+
+    imageUrl?: string;
 }
 
 @Entity({ name: 'post' })
@@ -82,4 +84,7 @@ export class PostEntity
         },
     })
     tags: TagEntity[];
+
+    @Column({ nullable: true })
+    imageUrl: string;
 }

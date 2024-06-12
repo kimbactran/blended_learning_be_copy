@@ -57,7 +57,7 @@ export class UserController {
     // GET
 
     @Get()
-    @Auth([RoleType.ADMIN, RoleType.TEACHER])
+    //@Auth([RoleType.ADMIN, RoleType.TEACHER])
     @HttpCode(HttpStatus.OK)
     @ApiPageOkResponse({
         description: 'Get users list',
@@ -68,7 +68,7 @@ export class UserController {
     }
 
     @Get(':id')
-    @Auth([RoleType.TEACHER, RoleType.ADMIN])
+    // @Auth([RoleType.TEACHER, RoleType.ADMIN, RoleType.STUDENT])
     @HttpCode(HttpStatus.OK)
     @ApiResponse({
         status: HttpStatus.OK,

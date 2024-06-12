@@ -35,7 +35,17 @@ export async function bootstrap(): Promise<NestExpressApplication> {
         new ExpressAdapter(),
     );
     app.enableCors({
-        origin: ['http://localhost:3000'],
+        origin: [
+            'http://localhost:3000',
+            'http://localhost:56534',
+            '192.168.2.101',
+            '192.168.1.4',
+            '192.168.137.222',
+            '192.168.2.100',
+            '192.168.11.156',
+            '192.168.137.243',
+            'https://blended-learning-fe-from-huy-8zxt.vercel.app',
+        ],
         methods: ['POST', 'GET', 'PUT', 'PATCH', 'DELETE'],
         credentials: true,
     });

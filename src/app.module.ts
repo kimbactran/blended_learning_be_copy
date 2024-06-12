@@ -2,6 +2,7 @@ import './boilerplate.polyfill';
 
 import { ClassroomModule } from '@modules/classroom/classroom.module';
 import { CommentModule } from '@modules/comment/comment.module';
+import { MessageModule } from '@modules/message/message.module';
 import { PostModule } from '@modules/post/post.module';
 import { TagModule } from '@modules/tag/tag.module';
 import { Module } from '@nestjs/common';
@@ -24,6 +25,7 @@ import { SharedModule } from './shared/shared.module';
         PostModule,
         CommentModule,
         TagModule,
+        MessageModule,
         // PostModule,
         ConfigModule.forRoot({
             isGlobal: true,
